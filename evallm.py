@@ -336,7 +336,7 @@ def compare_llms(config_file, output_file=None):
                                 # Construire le prompt complet avec contexte si nécessaire
                                 full_prompt = user_prompt
                                 if context:
-                                    full_prompt = f"{context}\n\n{user_prompt}"
+                                    full_prompt = f"{user_prompt}\n\n{context}"
                                 
                                 # Générer la réponse avec Ollama
                                 start_time = time.time()

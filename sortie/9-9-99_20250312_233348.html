@@ -25,14 +25,127 @@
             .json-link:hover { text-decoration: underline; }
             .seed-variation-table { margin-top: 20px; }
             .seed-header { background-color: #5c6bc0; color: white; }
+            .available-models-table { margin-top: 20px; }
         </style>
     </head>
     <body>
         <h1>Comparaison de Modèles LLM avec Ollama</h1>
-        <a href="llm_comparison_20250312_224444.json" class="json-link">📊 Voir les données brutes (JSON)</a>
+        <a href="9-9-99_20250312_233348.json" class="json-link">📊 Voir les données brutes (JSON)</a>
         <div class="metadata">
-            <p><strong>Date de génération:</strong> 2025-03-12 22:44:44</p>
+            <p><strong>Date de génération:</strong> 2025-03-12 23:37:58</p>
         </div>
+
+        <h2>Modèles Disponibles</h2>
+        <table class="available-models-table">
+            <tr class="model-header">
+                <th>Modèle</th>
+            </tr>
+    
+        <tr>
+            <td>MHKetbi/DeepSeek-R1-Distill-Llama-8B-NexaQuant:latest</td>
+        </tr>
+        
+        <tr>
+            <td>gemma3:12b</td>
+        </tr>
+        
+        <tr>
+            <td>mistral-small:24b</td>
+        </tr>
+        
+        <tr>
+            <td>gemma3:latest</td>
+        </tr>
+        
+        <tr>
+            <td>qwen2.5-coder:3b</td>
+        </tr>
+        
+        <tr>
+            <td>granite3.2:2b</td>
+        </tr>
+        
+        <tr>
+            <td>granite3.2:8b</td>
+        </tr>
+        
+        <tr>
+            <td>qwen2.5:14b</td>
+        </tr>
+        
+        <tr>
+            <td>gemma2:latest</td>
+        </tr>
+        
+        <tr>
+            <td>llama3.2-vision:11b</td>
+        </tr>
+        
+        <tr>
+            <td>deepseek-r1:14b</td>
+        </tr>
+        
+        <tr>
+            <td>phi4:latest</td>
+        </tr>
+        
+        <tr>
+            <td>nomic-embed-text:latest</td>
+        </tr>
+        
+        <tr>
+            <td>llama3.2:latest</td>
+        </tr>
+        
+        <tr>
+            <td>llava:latest</td>
+        </tr>
+        
+        <tr>
+            <td>dagbs/darkidol-llama-3.1-8b-instruct-1.0-uncensored:latest</td>
+        </tr>
+        
+        <tr>
+            <td>taozhiyuai/llama-3-8b-lexi-uncensored:f16</td>
+        </tr>
+        
+        <tr>
+            <td>nidumai/nidum-limitless-gemma-2b:latest</td>
+        </tr>
+        
+        <tr>
+            <td>moondream:latest</td>
+        </tr>
+        
+        <tr>
+            <td>martyyz/stable-prompt:latest</td>
+        </tr>
+        
+        <tr>
+            <td>impactframes/ifai_promptmkr_dolphin_phi3:latest</td>
+        </tr>
+        
+        <tr>
+            <td>impromptu2:latest</td>
+        </tr>
+        
+        <tr>
+            <td>impactframes/llama3_ifai_sd_prompt_mkr_q4km:latest</td>
+        </tr>
+        
+        <tr>
+            <td>impromptu:latest</td>
+        </tr>
+        
+        <tr>
+            <td>gemma:latest</td>
+        </tr>
+        
+        <tr>
+            <td>simone3:latest</td>
+        </tr>
+        
+    </table>
     
     <h2>Synthèse des Performances</h2>
     <table class="summary-table">
@@ -46,41 +159,49 @@
     
         <tr>
             <td>deepseek-r1:14b <span class="temp-badge">temp=0.0</span></td>
-            <td>7.76</td>
-            <td>7.70</td>
+            <td>7.51</td>
+            <td>7.35</td>
             <td>7.82</td>
-            <td>255</td>
+            <td>239</td>
         </tr>
         
         <tr>
             <td>gemma2:latest <span class="temp-badge">temp=0.0</span></td>
-            <td>0.27</td>
-            <td>0.26</td>
             <td>0.28</td>
+            <td>0.27</td>
+            <td>0.32</td>
+            <td>1</td>
+        </tr>
+        
+        <tr>
+            <td>gemma3:12b <span class="temp-badge">temp=0.0</span></td>
+            <td>0.50</td>
+            <td>0.47</td>
+            <td>0.59</td>
             <td>1</td>
         </tr>
         
         <tr>
             <td>gemma3:latest <span class="temp-badge">temp=0.0</span></td>
-            <td>0.42</td>
-            <td>0.38</td>
             <td>0.45</td>
+            <td>0.40</td>
+            <td>0.50</td>
             <td>1</td>
         </tr>
         
         <tr>
             <td>granite3.2:8b <span class="temp-badge">temp=0.0</span></td>
+            <td>0.26</td>
             <td>0.17</td>
-            <td>0.17</td>
-            <td>0.18</td>
-            <td>1</td>
+            <td>0.74</td>
+            <td>2</td>
         </tr>
         
         <tr>
             <td>llama3.2:latest <span class="temp-badge">temp=0.0</span></td>
-            <td>0.10</td>
-            <td>0.10</td>
             <td>0.11</td>
+            <td>0.10</td>
+            <td>0.13</td>
             <td>1</td>
         </tr>
         
@@ -88,31 +209,31 @@
             <td>mistral-small:24b <span class="temp-badge">temp=0.0</span></td>
             <td>0.32</td>
             <td>0.31</td>
-            <td>0.33</td>
+            <td>0.41</td>
             <td>1</td>
         </tr>
         
         <tr>
             <td>moondream:latest <span class="temp-badge">temp=0.0</span></td>
-            <td>0.07</td>
-            <td>0.07</td>
-            <td>0.08</td>
-            <td>3</td>
+            <td>0.10</td>
+            <td>0.09</td>
+            <td>0.11</td>
+            <td>7</td>
         </tr>
         
         <tr>
             <td>qwen2.5-coder:3b <span class="temp-badge">temp=0.0</span></td>
-            <td>0.12</td>
-            <td>0.12</td>
-            <td>0.13</td>
+            <td>0.14</td>
+            <td>0.14</td>
+            <td>0.17</td>
             <td>1</td>
         </tr>
         
         <tr>
             <td>qwen2.5:14b <span class="temp-badge">temp=0.0</span></td>
+            <td>0.27</td>
             <td>0.26</td>
-            <td>0.25</td>
-            <td>0.26</td>
+            <td>0.32</td>
             <td>1</td>
         </tr>
         
@@ -131,21 +252,21 @@
         
             <tr>
                 <td>6</td>
-                <td>0.26</td>
+                <td>0.32</td>
                 <td>1</td>
                 <td>1 mots</td>
             </tr>
             
             <tr>
                 <td>8</td>
-                <td>0.26</td>
+                <td>0.27</td>
                 <td>1</td>
                 <td>1 mots</td>
             </tr>
             
             <tr>
                 <td>68</td>
-                <td>0.26</td>
+                <td>0.27</td>
                 <td>1</td>
                 <td>1 mots</td>
             </tr>
@@ -166,7 +287,7 @@
             
             <tr>
                 <td>668</td>
-                <td>0.28</td>
+                <td>0.27</td>
                 <td>1</td>
                 <td>1 mots</td>
             </tr>
@@ -191,21 +312,21 @@
         
             <tr>
                 <td>6</td>
-                <td>0.42</td>
+                <td>0.40</td>
                 <td>1</td>
                 <td>1 mots</td>
             </tr>
             
             <tr>
                 <td>8</td>
-                <td>0.41</td>
+                <td>0.45</td>
                 <td>1</td>
                 <td>1 mots</td>
             </tr>
             
             <tr>
                 <td>68</td>
-                <td>0.43</td>
+                <td>0.48</td>
                 <td>1</td>
                 <td>1 mots</td>
             </tr>
@@ -219,7 +340,7 @@
             
             <tr>
                 <td>886</td>
-                <td>0.38</td>
+                <td>0.47</td>
                 <td>1</td>
                 <td>1 mots</td>
             </tr>
@@ -233,7 +354,67 @@
             
             <tr>
                 <td>686</td>
-                <td>0.41</td>
+                <td>0.50</td>
+                <td>1</td>
+                <td>1 mots</td>
+            </tr>
+            
+        </table>
+        
+        <h3>gemma3:12b (température: 0.0)</h3>
+        <table class="seed-variation-table">
+            <tr class="seed-header">
+                <th>Graine</th>
+                <th>Temps moyen (s)</th>
+                <th>Nombre de réponses</th>
+                <th>Longueur moyenne des réponses</th>
+            </tr>
+        
+            <tr>
+                <td>6</td>
+                <td>0.59</td>
+                <td>1</td>
+                <td>1 mots</td>
+            </tr>
+            
+            <tr>
+                <td>8</td>
+                <td>0.49</td>
+                <td>1</td>
+                <td>1 mots</td>
+            </tr>
+            
+            <tr>
+                <td>68</td>
+                <td>0.49</td>
+                <td>1</td>
+                <td>1 mots</td>
+            </tr>
+            
+            <tr>
+                <td>86</td>
+                <td>0.47</td>
+                <td>1</td>
+                <td>1 mots</td>
+            </tr>
+            
+            <tr>
+                <td>886</td>
+                <td>0.47</td>
+                <td>1</td>
+                <td>1 mots</td>
+            </tr>
+            
+            <tr>
+                <td>668</td>
+                <td>0.53</td>
+                <td>1</td>
+                <td>1 mots</td>
+            </tr>
+            
+            <tr>
+                <td>686</td>
+                <td>0.50</td>
                 <td>1</td>
                 <td>1 mots</td>
             </tr>
@@ -251,9 +432,9 @@
         
             <tr>
                 <td>6</td>
-                <td>0.17</td>
+                <td>0.74</td>
                 <td>1</td>
-                <td>1 mots</td>
+                <td>5 mots</td>
             </tr>
             
             <tr>
@@ -265,7 +446,7 @@
             
             <tr>
                 <td>68</td>
-                <td>0.17</td>
+                <td>0.18</td>
                 <td>1</td>
                 <td>1 mots</td>
             </tr>
@@ -311,7 +492,7 @@
         
             <tr>
                 <td>6</td>
-                <td>0.25</td>
+                <td>0.32</td>
                 <td>1</td>
                 <td>1 mots</td>
             </tr>
@@ -325,7 +506,7 @@
             
             <tr>
                 <td>68</td>
-                <td>0.25</td>
+                <td>0.26</td>
                 <td>1</td>
                 <td>1 mots</td>
             </tr>
@@ -371,51 +552,51 @@
         
             <tr>
                 <td>6</td>
-                <td>7.70</td>
+                <td>7.82</td>
                 <td>1</td>
-                <td>255 mots</td>
+                <td>239 mots</td>
             </tr>
             
             <tr>
                 <td>8</td>
-                <td>7.70</td>
+                <td>7.55</td>
                 <td>1</td>
-                <td>255 mots</td>
+                <td>239 mots</td>
             </tr>
             
             <tr>
                 <td>68</td>
-                <td>7.78</td>
+                <td>7.69</td>
                 <td>1</td>
-                <td>255 mots</td>
+                <td>239 mots</td>
             </tr>
             
             <tr>
                 <td>86</td>
-                <td>7.77</td>
+                <td>7.39</td>
                 <td>1</td>
-                <td>255 mots</td>
+                <td>239 mots</td>
             </tr>
             
             <tr>
                 <td>886</td>
-                <td>7.79</td>
+                <td>7.40</td>
                 <td>1</td>
-                <td>255 mots</td>
+                <td>239 mots</td>
             </tr>
             
             <tr>
                 <td>668</td>
-                <td>7.82</td>
+                <td>7.39</td>
                 <td>1</td>
-                <td>255 mots</td>
+                <td>239 mots</td>
             </tr>
             
             <tr>
                 <td>686</td>
-                <td>7.74</td>
+                <td>7.35</td>
                 <td>1</td>
-                <td>255 mots</td>
+                <td>239 mots</td>
             </tr>
             
         </table>
@@ -431,28 +612,28 @@
         
             <tr>
                 <td>6</td>
-                <td>0.10</td>
+                <td>0.13</td>
                 <td>1</td>
                 <td>1 mots</td>
             </tr>
             
             <tr>
                 <td>8</td>
-                <td>0.11</td>
+                <td>0.10</td>
                 <td>1</td>
                 <td>1 mots</td>
             </tr>
             
             <tr>
                 <td>68</td>
-                <td>0.11</td>
+                <td>0.10</td>
                 <td>1</td>
                 <td>1 mots</td>
             </tr>
             
             <tr>
                 <td>86</td>
-                <td>0.11</td>
+                <td>0.10</td>
                 <td>1</td>
                 <td>1 mots</td>
             </tr>
@@ -491,49 +672,49 @@
         
             <tr>
                 <td>6</td>
-                <td>0.12</td>
+                <td>0.17</td>
                 <td>1</td>
                 <td>1 mots</td>
             </tr>
             
             <tr>
                 <td>8</td>
-                <td>0.12</td>
+                <td>0.14</td>
                 <td>1</td>
                 <td>1 mots</td>
             </tr>
             
             <tr>
                 <td>68</td>
-                <td>0.12</td>
+                <td>0.14</td>
                 <td>1</td>
                 <td>1 mots</td>
             </tr>
             
             <tr>
                 <td>86</td>
-                <td>0.13</td>
+                <td>0.14</td>
                 <td>1</td>
                 <td>1 mots</td>
             </tr>
             
             <tr>
                 <td>886</td>
-                <td>0.12</td>
+                <td>0.14</td>
                 <td>1</td>
                 <td>1 mots</td>
             </tr>
             
             <tr>
                 <td>668</td>
-                <td>0.12</td>
+                <td>0.14</td>
                 <td>1</td>
                 <td>1 mots</td>
             </tr>
             
             <tr>
                 <td>686</td>
-                <td>0.13</td>
+                <td>0.14</td>
                 <td>1</td>
                 <td>1 mots</td>
             </tr>
@@ -551,51 +732,51 @@
         
             <tr>
                 <td>6</td>
-                <td>0.07</td>
+                <td>0.11</td>
                 <td>1</td>
-                <td>3 mots</td>
+                <td>7 mots</td>
             </tr>
             
             <tr>
                 <td>8</td>
-                <td>0.08</td>
+                <td>0.10</td>
                 <td>1</td>
-                <td>3 mots</td>
+                <td>7 mots</td>
             </tr>
             
             <tr>
                 <td>68</td>
-                <td>0.07</td>
+                <td>0.10</td>
                 <td>1</td>
-                <td>3 mots</td>
+                <td>7 mots</td>
             </tr>
             
             <tr>
                 <td>86</td>
-                <td>0.08</td>
+                <td>0.09</td>
                 <td>1</td>
-                <td>3 mots</td>
+                <td>7 mots</td>
             </tr>
             
             <tr>
                 <td>886</td>
-                <td>0.07</td>
+                <td>0.10</td>
                 <td>1</td>
-                <td>3 mots</td>
+                <td>7 mots</td>
             </tr>
             
             <tr>
                 <td>668</td>
-                <td>0.08</td>
+                <td>0.10</td>
                 <td>1</td>
-                <td>3 mots</td>
+                <td>7 mots</td>
             </tr>
             
             <tr>
                 <td>686</td>
-                <td>0.07</td>
+                <td>0.10</td>
                 <td>1</td>
-                <td>3 mots</td>
+                <td>7 mots</td>
             </tr>
             
         </table>
@@ -611,7 +792,7 @@
         
             <tr>
                 <td>6</td>
-                <td>0.33</td>
+                <td>0.41</td>
                 <td>1</td>
                 <td>1 mots</td>
             </tr>
@@ -625,21 +806,21 @@
             
             <tr>
                 <td>68</td>
-                <td>0.32</td>
+                <td>0.31</td>
                 <td>1</td>
                 <td>1 mots</td>
             </tr>
             
             <tr>
                 <td>86</td>
-                <td>0.32</td>
+                <td>0.31</td>
                 <td>1</td>
                 <td>1 mots</td>
             </tr>
             
             <tr>
                 <td>886</td>
-                <td>0.32</td>
+                <td>0.31</td>
                 <td>1</td>
                 <td>1 mots</td>
             </tr>
@@ -653,7 +834,7 @@
             
             <tr>
                 <td>686</td>
-                <td>0.32</td>
+                <td>0.31</td>
                 <td>1</td>
                 <td>1 mots</td>
             </tr>
@@ -680,52 +861,52 @@
             <td>sources</td>
             <td>6</td>
             <td>0.0</td>
-            <td>7.70</td>
-            <td class="response"><think><br>Okay, let me try to figure out the correct date from these sources. So, there are five different sources here, each giving a bit of information about when something happened or was remembered.<br><br>Starting with source 1: "le lendemain du 8 septembre 1999 quand nous avons pris le train pour aller à Paris." The key part here is "lendemain" which means the day after. So if it's the day after September 8, 1999, that would be September 9, 1999.<br><br>Source 2 says: "la veille du 10/9/99 10h15 je me souviens il faisait froid." The term "veille" means the day before. So if it's the day before September 10, 1999, that would be September 9, 1999 as well.<br><br>Sources 3 to 5 are a bit more vague. Source 3 says, "aujourd'hui je ne m'en souviens plus !" which translates to "today I don't remember anymore." This doesn't give a specific date but might indicate that the event is in the past. Source 4: "c'est déjà passé !" meaning "it's already passed," again indicating something has happened before now. Source 5: "demain il sera trop tard !" which means "tomorrow it will be too late." This suggests urgency, implying that whatever happened was supposed to happen today or yesterday.<br><br>Putting this all together, sources 1 and 2 both point to September 9, 1999 as the day in question. Sources 3-5 don't provide specific dates but reinforce that the event is in the past, which aligns with the earlier clues from sources 1 and 2.<br></think><br><br>09/09/1999</td>
-        </tr>
-        
-        <tr>
-            <td>deepseek-r1:14b</td>
-            <td>systeme</td>
-            <td>utilisateur</td>
-            <td>sources</td>
-            <td>8</td>
-            <td>0.0</td>
-            <td>7.70</td>
-            <td class="response"><think><br>Okay, let me try to figure out the correct date from these sources. So, there are five different sources here, each giving a bit of information about when something happened or was remembered.<br><br>Starting with source 1: "le lendemain du 8 septembre 1999 quand nous avons pris le train pour aller à Paris." The key part here is "lendemain" which means the day after. So if it's the day after September 8, 1999, that would be September 9, 1999.<br><br>Source 2 says: "la veille du 10/9/99 10h15 je me souviens il faisait froid." The term "veille" means the day before. So if it's the day before September 10, 1999, that would be September 9, 1999 as well.<br><br>Sources 3 to 5 are a bit more vague. Source 3 says, "aujourd'hui je ne m'en souviens plus !" which translates to "today I don't remember anymore." This doesn't give a specific date but might indicate that the event is in the past. Source 4: "c'est déjà passé !" meaning "it's already passed," again indicating something has happened before now. Source 5: "demain il sera trop tard !" which means "tomorrow it will be too late." This suggests urgency, implying that whatever happened was supposed to happen today or yesterday.<br><br>Putting this all together, sources 1 and 2 both point to September 9, 1999 as the day in question. Sources 3-5 don't provide specific dates but reinforce that the event is in the past, which aligns with the earlier clues from sources 1 and 2.<br></think><br><br>09/09/1999</td>
-        </tr>
-        
-        <tr>
-            <td>deepseek-r1:14b</td>
-            <td>systeme</td>
-            <td>utilisateur</td>
-            <td>sources</td>
-            <td>68</td>
-            <td>0.0</td>
-            <td>7.78</td>
-            <td class="response"><think><br>Okay, let me try to figure out the correct date from these sources. So, there are five different sources here, each giving a bit of information about when something happened or was remembered.<br><br>Starting with source 1: "le lendemain du 8 septembre 1999 quand nous avons pris le train pour aller à Paris." The key part here is "lendemain" which means the day after. So if it's the day after September 8, 1999, that would be September 9, 1999.<br><br>Source 2 says: "la veille du 10/9/99 10h15 je me souviens il faisait froid." The term "veille" means the day before. So if it's the day before September 10, 1999, that would be September 9, 1999 as well.<br><br>Sources 3 to 5 are a bit more vague. Source 3 says, "aujourd'hui je ne m'en souviens plus !" which translates to "today I don't remember anymore." This doesn't give a specific date but might indicate that the event is in the past. Source 4: "c'est déjà passé !" meaning "it's already passed," again indicating something has happened before now. Source 5: "demain il sera trop tard !" which means "tomorrow it will be too late." This suggests urgency, implying that whatever happened was supposed to happen today or yesterday.<br><br>Putting this all together, sources 1 and 2 both point to September 9, 1999 as the day in question. Sources 3-5 don't provide specific dates but reinforce that the event is in the past, which aligns with the earlier clues from sources 1 and 2.<br></think><br><br>09/09/1999</td>
-        </tr>
-        
-        <tr>
-            <td>deepseek-r1:14b</td>
-            <td>systeme</td>
-            <td>utilisateur</td>
-            <td>sources</td>
-            <td>86</td>
-            <td>0.0</td>
-            <td>7.77</td>
-            <td class="response"><think><br>Okay, let me try to figure out the correct date from these sources. So, there are five different sources here, each giving a bit of information about when something happened or was remembered.<br><br>Starting with source 1: "le lendemain du 8 septembre 1999 quand nous avons pris le train pour aller à Paris." The key part here is "lendemain" which means the day after. So if it's the day after September 8, 1999, that would be September 9, 1999.<br><br>Source 2 says: "la veille du 10/9/99 10h15 je me souviens il faisait froid." The term "veille" means the day before. So if it's the day before September 10, 1999, that would be September 9, 1999 as well.<br><br>Sources 3 to 5 are a bit more vague. Source 3 says, "aujourd'hui je ne m'en souviens plus !" which translates to "today I don't remember anymore." This doesn't give a specific date but might indicate that the event is in the past. Source 4: "c'est déjà passé !" meaning "it's already passed," again indicating something has happened before now. Source 5: "demain il sera trop tard !" which means "tomorrow it will be too late." This suggests urgency, implying that whatever happened was supposed to happen today or yesterday.<br><br>Putting this all together, sources 1 and 2 both point to September 9, 1999 as the day in question. Sources 3-5 don't provide specific dates but reinforce that the event is in the past, which aligns with the earlier clues from sources 1 and 2.<br></think><br><br>09/09/1999</td>
-        </tr>
-        
-        <tr>
-            <td>deepseek-r1:14b</td>
-            <td>systeme</td>
-            <td>utilisateur</td>
-            <td>sources</td>
-            <td>668</td>
-            <td>0.0</td>
             <td>7.82</td>
-            <td class="response"><think><br>Okay, let me try to figure out the correct date from these sources. So, there are five different sources here, each giving a bit of information about when something happened or was remembered.<br><br>Starting with source 1: "le lendemain du 8 septembre 1999 quand nous avons pris le train pour aller à Paris." The key part here is "lendemain" which means the day after. So if it's the day after September 8, 1999, that would be September 9, 1999.<br><br>Source 2 says: "la veille du 10/9/99 10h15 je me souviens il faisait froid." The term "veille" means the day before. So if it's the day before September 10, 1999, that would be September 9, 1999 as well.<br><br>Sources 3 to 5 are a bit more vague. Source 3 says, "aujourd'hui je ne m'en souviens plus !" which translates to "today I don't remember anymore." This doesn't give a specific date but might indicate that the event is in the past. Source 4: "c'est déjà passé !" meaning "it's already passed," again indicating something has happened before now. Source 5: "demain il sera trop tard !" which means "tomorrow it will be too late." This suggests urgency, implying that whatever happened was supposed to happen today or yesterday.<br><br>Putting this all together, sources 1 and 2 both point to September 9, 1999 as the day in question. Sources 3-5 don't provide specific dates but reinforce that the event is in the past, which aligns with the earlier clues from sources 1 and 2.<br></think><br><br>09/09/1999</td>
+            <td class="response"><think><br>Alright, let's try to figure out the date based on the given sources. So, there are five sources provided, each with some clues about dates or events.<br><br>Starting with Source 1: "le lendemain du 8 septembre 1999 quand nous avons pris le train pour aller à Paris." The key here is "lendemain," which means the day after. So if it's the day after September 8, 1999, that would be September 9, 1999.<br><br>Source 2: "la veille du 10/9/99 10h15 je me souviens il faisait froid." The term "veille" means the day before. So if the next day is September 10, 1999, then the date in question would be September 9, 1999.<br><br>Sources 3, 4, and 5 don't provide specific dates but rather expressions about time passing or future events. Source 3 says "aujourd'hui je ne m'en souviens plus !" which translates to "today I no longer remember it!" But without a specific date mentioned, it's not helpful on its own.<br><br>Source 4: "c'est déjà passé !" meaning "it's already passed," and Source 5: "demain il sera trop tard !" meaning "tomorrow will be too late." These are more about the passage of time but don't give a specific date.<br><br>Putting it all together, Sources 1 and 2 both point to September 9, 1999. The other sources don't add any new information regarding dates, so the most consistent date from the provided sources is September 9, 1999.<br></think><br><br>09/09/1999</td>
+        </tr>
+        
+        <tr>
+            <td>deepseek-r1:14b</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>8</td>
+            <td>0.0</td>
+            <td>7.55</td>
+            <td class="response"><think><br>Alright, let's try to figure out the date based on the given sources. So, there are five sources provided, each with some clues about dates or events.<br><br>Starting with Source 1: "le lendemain du 8 septembre 1999 quand nous avons pris le train pour aller à Paris." The key here is "lendemain," which means the day after. So if it's the day after September 8, 1999, that would be September 9, 1999.<br><br>Source 2: "la veille du 10/9/99 10h15 je me souviens il faisait froid." The term "veille" means the day before. So if the next day is September 10, 1999, then the date in question would be September 9, 1999.<br><br>Sources 3, 4, and 5 don't provide specific dates but rather expressions about time passing or future events. Source 3 says "aujourd'hui je ne m'en souviens plus !" which translates to "today I no longer remember it!" But without a specific date mentioned, it's not helpful on its own.<br><br>Source 4: "c'est déjà passé !" meaning "it's already passed," and Source 5: "demain il sera trop tard !" meaning "tomorrow will be too late." These are more about the passage of time but don't give a specific date.<br><br>Putting it all together, Sources 1 and 2 both point to September 9, 1999. The other sources don't add any new information regarding dates, so the most consistent date from the provided sources is September 9, 1999.<br></think><br><br>09/09/1999</td>
+        </tr>
+        
+        <tr>
+            <td>deepseek-r1:14b</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>68</td>
+            <td>0.0</td>
+            <td>7.69</td>
+            <td class="response"><think><br>Alright, let's try to figure out the date based on the given sources. So, there are five sources provided, each with some clues about dates or events.<br><br>Starting with Source 1: "le lendemain du 8 septembre 1999 quand nous avons pris le train pour aller à Paris." The key here is "lendemain," which means the day after. So if it's the day after September 8, 1999, that would be September 9, 1999.<br><br>Source 2: "la veille du 10/9/99 10h15 je me souviens il faisait froid." The term "veille" means the day before. So if the next day is September 10, 1999, then the date in question would be September 9, 1999.<br><br>Sources 3, 4, and 5 don't provide specific dates but rather expressions about time passing or future events. Source 3 says "aujourd'hui je ne m'en souviens plus !" which translates to "today I no longer remember it!" But without a specific date mentioned, it's not helpful on its own.<br><br>Source 4: "c'est déjà passé !" meaning "it's already passed," and Source 5: "demain il sera trop tard !" meaning "tomorrow will be too late." These are more about the passage of time but don't give a specific date.<br><br>Putting it all together, Sources 1 and 2 both point to September 9, 1999. The other sources don't add any new information regarding dates, so the most consistent date from the provided sources is September 9, 1999.<br></think><br><br>09/09/1999</td>
+        </tr>
+        
+        <tr>
+            <td>deepseek-r1:14b</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>86</td>
+            <td>0.0</td>
+            <td>7.39</td>
+            <td class="response"><think><br>Alright, let's try to figure out the date based on the given sources. So, there are five sources provided, each with some clues about dates or events.<br><br>Starting with Source 1: "le lendemain du 8 septembre 1999 quand nous avons pris le train pour aller à Paris." The key here is "lendemain," which means the day after. So if it's the day after September 8, 1999, that would be September 9, 1999.<br><br>Source 2: "la veille du 10/9/99 10h15 je me souviens il faisait froid." The term "veille" means the day before. So if the next day is September 10, 1999, then the date in question would be September 9, 1999.<br><br>Sources 3, 4, and 5 don't provide specific dates but rather expressions about time passing or future events. Source 3 says "aujourd'hui je ne m'en souviens plus !" which translates to "today I no longer remember it!" But without a specific date mentioned, it's not helpful on its own.<br><br>Source 4: "c'est déjà passé !" meaning "it's already passed," and Source 5: "demain il sera trop tard !" meaning "tomorrow will be too late." These are more about the passage of time but don't give a specific date.<br><br>Putting it all together, Sources 1 and 2 both point to September 9, 1999. The other sources don't add any new information regarding dates, so the most consistent date from the provided sources is September 9, 1999.<br></think><br><br>09/09/1999</td>
+        </tr>
+        
+        <tr>
+            <td>deepseek-r1:14b</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>668</td>
+            <td>0.0</td>
+            <td>7.39</td>
+            <td class="response"><think><br>Alright, let's try to figure out the date based on the given sources. So, there are five sources provided, each with some clues about dates or events.<br><br>Starting with Source 1: "le lendemain du 8 septembre 1999 quand nous avons pris le train pour aller à Paris." The key here is "lendemain," which means the day after. So if it's the day after September 8, 1999, that would be September 9, 1999.<br><br>Source 2: "la veille du 10/9/99 10h15 je me souviens il faisait froid." The term "veille" means the day before. So if the next day is September 10, 1999, then the date in question would be September 9, 1999.<br><br>Sources 3, 4, and 5 don't provide specific dates but rather expressions about time passing or future events. Source 3 says "aujourd'hui je ne m'en souviens plus !" which translates to "today I no longer remember it!" But without a specific date mentioned, it's not helpful on its own.<br><br>Source 4: "c'est déjà passé !" meaning "it's already passed," and Source 5: "demain il sera trop tard !" meaning "tomorrow will be too late." These are more about the passage of time but don't give a specific date.<br><br>Putting it all together, Sources 1 and 2 both point to September 9, 1999. The other sources don't add any new information regarding dates, so the most consistent date from the provided sources is September 9, 1999.<br></think><br><br>09/09/1999</td>
         </tr>
         
         <tr>
@@ -735,8 +916,8 @@
             <td>sources</td>
             <td>686</td>
             <td>0.0</td>
-            <td>7.74</td>
-            <td class="response"><think><br>Okay, let me try to figure out the correct date from these sources. So, there are five different sources here, each giving a bit of information about when something happened or was remembered.<br><br>Starting with source 1: "le lendemain du 8 septembre 1999 quand nous avons pris le train pour aller à Paris." The key part here is "lendemain" which means the day after. So if it's the day after September 8, 1999, that would be September 9, 1999.<br><br>Source 2 says: "la veille du 10/9/99 10h15 je me souviens il faisait froid." The term "veille" means the day before. So if it's the day before September 10, 1999, that would be September 9, 1999 as well.<br><br>Sources 3 to 5 are a bit more vague. Source 3 says, "aujourd'hui je ne m'en souviens plus !" which translates to "today I don't remember anymore." This doesn't give a specific date but might indicate that the event is in the past. Source 4: "c'est déjà passé !" meaning "it's already passed," again indicating something has happened before now. Source 5: "demain il sera trop tard !" which means "tomorrow it will be too late." This suggests urgency, implying that whatever happened was supposed to happen today or yesterday.<br><br>Putting this all together, sources 1 and 2 both point to September 9, 1999 as the day in question. Sources 3-5 don't provide specific dates but reinforce that the event is in the past, which aligns with the earlier clues from sources 1 and 2.<br></think><br><br>09/09/1999</td>
+            <td>7.35</td>
+            <td class="response"><think><br>Alright, let's try to figure out the date based on the given sources. So, there are five sources provided, each with some clues about dates or events.<br><br>Starting with Source 1: "le lendemain du 8 septembre 1999 quand nous avons pris le train pour aller à Paris." The key here is "lendemain," which means the day after. So if it's the day after September 8, 1999, that would be September 9, 1999.<br><br>Source 2: "la veille du 10/9/99 10h15 je me souviens il faisait froid." The term "veille" means the day before. So if the next day is September 10, 1999, then the date in question would be September 9, 1999.<br><br>Sources 3, 4, and 5 don't provide specific dates but rather expressions about time passing or future events. Source 3 says "aujourd'hui je ne m'en souviens plus !" which translates to "today I no longer remember it!" But without a specific date mentioned, it's not helpful on its own.<br><br>Source 4: "c'est déjà passé !" meaning "it's already passed," and Source 5: "demain il sera trop tard !" meaning "tomorrow will be too late." These are more about the passage of time but don't give a specific date.<br><br>Putting it all together, Sources 1 and 2 both point to September 9, 1999. The other sources don't add any new information regarding dates, so the most consistent date from the provided sources is September 9, 1999.<br></think><br><br>09/09/1999</td>
         </tr>
         
         <tr>
@@ -746,8 +927,8 @@
             <td>sources</td>
             <td>886</td>
             <td>0.0</td>
-            <td>7.79</td>
-            <td class="response"><think><br>Okay, let me try to figure out the correct date from these sources. So, there are five different sources here, each giving a bit of information about when something happened or was remembered.<br><br>Starting with source 1: "le lendemain du 8 septembre 1999 quand nous avons pris le train pour aller à Paris." The key part here is "lendemain" which means the day after. So if it's the day after September 8, 1999, that would be September 9, 1999.<br><br>Source 2 says: "la veille du 10/9/99 10h15 je me souviens il faisait froid." The term "veille" means the day before. So if it's the day before September 10, 1999, that would be September 9, 1999 as well.<br><br>Sources 3 to 5 are a bit more vague. Source 3 says, "aujourd'hui je ne m'en souviens plus !" which translates to "today I don't remember anymore." This doesn't give a specific date but might indicate that the event is in the past. Source 4: "c'est déjà passé !" meaning "it's already passed," again indicating something has happened before now. Source 5: "demain il sera trop tard !" which means "tomorrow it will be too late." This suggests urgency, implying that whatever happened was supposed to happen today or yesterday.<br><br>Putting this all together, sources 1 and 2 both point to September 9, 1999 as the day in question. Sources 3-5 don't provide specific dates but reinforce that the event is in the past, which aligns with the earlier clues from sources 1 and 2.<br></think><br><br>09/09/1999</td>
+            <td>7.40</td>
+            <td class="response"><think><br>Alright, let's try to figure out the date based on the given sources. So, there are five sources provided, each with some clues about dates or events.<br><br>Starting with Source 1: "le lendemain du 8 septembre 1999 quand nous avons pris le train pour aller à Paris." The key here is "lendemain," which means the day after. So if it's the day after September 8, 1999, that would be September 9, 1999.<br><br>Source 2: "la veille du 10/9/99 10h15 je me souviens il faisait froid." The term "veille" means the day before. So if the next day is September 10, 1999, then the date in question would be September 9, 1999.<br><br>Sources 3, 4, and 5 don't provide specific dates but rather expressions about time passing or future events. Source 3 says "aujourd'hui je ne m'en souviens plus !" which translates to "today I no longer remember it!" But without a specific date mentioned, it's not helpful on its own.<br><br>Source 4: "c'est déjà passé !" meaning "it's already passed," and Source 5: "demain il sera trop tard !" meaning "tomorrow will be too late." These are more about the passage of time but don't give a specific date.<br><br>Putting it all together, Sources 1 and 2 both point to September 9, 1999. The other sources don't add any new information regarding dates, so the most consistent date from the provided sources is September 9, 1999.<br></think><br><br>09/09/1999</td>
         </tr>
         
         <tr>
@@ -757,7 +938,7 @@
             <td>sources</td>
             <td>6</td>
             <td>0.0</td>
-            <td>0.26</td>
+            <td>0.32</td>
             <td class="response">09/09/1999 <br></td>
         </tr>
         
@@ -768,7 +949,7 @@
             <td>sources</td>
             <td>8</td>
             <td>0.0</td>
-            <td>0.26</td>
+            <td>0.27</td>
             <td class="response">09/09/1999 <br></td>
         </tr>
         
@@ -779,7 +960,7 @@
             <td>sources</td>
             <td>68</td>
             <td>0.0</td>
-            <td>0.26</td>
+            <td>0.27</td>
             <td class="response">09/09/1999 <br></td>
         </tr>
         
@@ -801,7 +982,7 @@
             <td>sources</td>
             <td>668</td>
             <td>0.0</td>
-            <td>0.28</td>
+            <td>0.27</td>
             <td class="response">09/09/1999 <br></td>
         </tr>
         
@@ -828,14 +1009,91 @@
         </tr>
         
         <tr>
+            <td>gemma3:12b</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>6</td>
+            <td>0.0</td>
+            <td>0.59</td>
+            <td class="response">09/09/1999<br></td>
+        </tr>
+        
+        <tr>
+            <td>gemma3:12b</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>8</td>
+            <td>0.0</td>
+            <td>0.49</td>
+            <td class="response">09/09/1999<br></td>
+        </tr>
+        
+        <tr>
+            <td>gemma3:12b</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>68</td>
+            <td>0.0</td>
+            <td>0.49</td>
+            <td class="response">09/09/1999<br></td>
+        </tr>
+        
+        <tr>
+            <td>gemma3:12b</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>86</td>
+            <td>0.0</td>
+            <td>0.47</td>
+            <td class="response">09/09/1999<br></td>
+        </tr>
+        
+        <tr>
+            <td>gemma3:12b</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>668</td>
+            <td>0.0</td>
+            <td>0.53</td>
+            <td class="response">09/09/1999<br></td>
+        </tr>
+        
+        <tr>
+            <td>gemma3:12b</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>686</td>
+            <td>0.0</td>
+            <td>0.50</td>
+            <td class="response">09/09/1999<br></td>
+        </tr>
+        
+        <tr>
+            <td>gemma3:12b</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>886</td>
+            <td>0.0</td>
+            <td>0.47</td>
+            <td class="response">09/09/1999<br></td>
+        </tr>
+        
+        <tr>
             <td>gemma3:latest</td>
             <td>systeme</td>
             <td>utilisateur</td>
             <td>sources</td>
             <td>6</td>
             <td>0.0</td>
-            <td>0.42</td>
-            <td class="response">10/09/1999<br></td>
+            <td>0.40</td>
+            <td class="response">09/09/1999<br></td>
         </tr>
         
         <tr>
@@ -845,8 +1103,8 @@
             <td>sources</td>
             <td>8</td>
             <td>0.0</td>
-            <td>0.41</td>
-            <td class="response">10/09/1999<br></td>
+            <td>0.45</td>
+            <td class="response">09/09/1999<br></td>
         </tr>
         
         <tr>
@@ -856,8 +1114,8 @@
             <td>sources</td>
             <td>68</td>
             <td>0.0</td>
-            <td>0.43</td>
-            <td class="response">10/09/1999<br></td>
+            <td>0.48</td>
+            <td class="response">09/09/1999<br></td>
         </tr>
         
         <tr>
@@ -868,7 +1126,7 @@
             <td>86</td>
             <td>0.0</td>
             <td>0.41</td>
-            <td class="response">10/09/1999<br></td>
+            <td class="response">09/09/1999<br></td>
         </tr>
         
         <tr>
@@ -879,7 +1137,7 @@
             <td>668</td>
             <td>0.0</td>
             <td>0.45</td>
-            <td class="response">10/09/1999<br></td>
+            <td class="response">09/09/1999<br></td>
         </tr>
         
         <tr>
@@ -888,184 +1146,184 @@
             <td>utilisateur</td>
             <td>sources</td>
             <td>686</td>
+            <td>0.0</td>
+            <td>0.50</td>
+            <td class="response">09/09/1999<br></td>
+        </tr>
+        
+        <tr>
+            <td>gemma3:latest</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>886</td>
+            <td>0.0</td>
+            <td>0.47</td>
+            <td class="response">09/09/1999<br></td>
+        </tr>
+        
+        <tr>
+            <td>granite3.2:8b</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>6</td>
+            <td>0.0</td>
+            <td>0.74</td>
+            <td class="response">09/09/1999<br>09/09/1999<br>08/09/1999<br>10/09/1999<br>09/09/1999</td>
+        </tr>
+        
+        <tr>
+            <td>granite3.2:8b</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>8</td>
+            <td>0.0</td>
+            <td>0.18</td>
+            <td class="response">09/09/1999</td>
+        </tr>
+        
+        <tr>
+            <td>granite3.2:8b</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>68</td>
+            <td>0.0</td>
+            <td>0.18</td>
+            <td class="response">09/09/1999</td>
+        </tr>
+        
+        <tr>
+            <td>granite3.2:8b</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>86</td>
+            <td>0.0</td>
+            <td>0.17</td>
+            <td class="response">09/09/1999</td>
+        </tr>
+        
+        <tr>
+            <td>granite3.2:8b</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>668</td>
+            <td>0.0</td>
+            <td>0.18</td>
+            <td class="response">09/09/1999</td>
+        </tr>
+        
+        <tr>
+            <td>granite3.2:8b</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>686</td>
+            <td>0.0</td>
+            <td>0.17</td>
+            <td class="response">09/09/1999</td>
+        </tr>
+        
+        <tr>
+            <td>granite3.2:8b</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>886</td>
+            <td>0.0</td>
+            <td>0.17</td>
+            <td class="response">09/09/1999</td>
+        </tr>
+        
+        <tr>
+            <td>llama3.2:latest</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>6</td>
+            <td>0.0</td>
+            <td>0.13</td>
+            <td class="response">08/09/1999</td>
+        </tr>
+        
+        <tr>
+            <td>llama3.2:latest</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>8</td>
+            <td>0.0</td>
+            <td>0.10</td>
+            <td class="response">08/09/1999</td>
+        </tr>
+        
+        <tr>
+            <td>llama3.2:latest</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>68</td>
+            <td>0.0</td>
+            <td>0.10</td>
+            <td class="response">08/09/1999</td>
+        </tr>
+        
+        <tr>
+            <td>llama3.2:latest</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>86</td>
+            <td>0.0</td>
+            <td>0.10</td>
+            <td class="response">08/09/1999</td>
+        </tr>
+        
+        <tr>
+            <td>llama3.2:latest</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>668</td>
+            <td>0.0</td>
+            <td>0.10</td>
+            <td class="response">08/09/1999</td>
+        </tr>
+        
+        <tr>
+            <td>llama3.2:latest</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>686</td>
+            <td>0.0</td>
+            <td>0.10</td>
+            <td class="response">08/09/1999</td>
+        </tr>
+        
+        <tr>
+            <td>llama3.2:latest</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>886</td>
+            <td>0.0</td>
+            <td>0.10</td>
+            <td class="response">08/09/1999</td>
+        </tr>
+        
+        <tr>
+            <td>mistral-small:24b</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>6</td>
             <td>0.0</td>
             <td>0.41</td>
-            <td class="response">10/09/1999<br></td>
-        </tr>
-        
-        <tr>
-            <td>gemma3:latest</td>
-            <td>systeme</td>
-            <td>utilisateur</td>
-            <td>sources</td>
-            <td>886</td>
-            <td>0.0</td>
-            <td>0.38</td>
-            <td class="response">10/09/1999<br></td>
-        </tr>
-        
-        <tr>
-            <td>granite3.2:8b</td>
-            <td>systeme</td>
-            <td>utilisateur</td>
-            <td>sources</td>
-            <td>6</td>
-            <td>0.0</td>
-            <td>0.17</td>
-            <td class="response">08/09/1999</td>
-        </tr>
-        
-        <tr>
-            <td>granite3.2:8b</td>
-            <td>systeme</td>
-            <td>utilisateur</td>
-            <td>sources</td>
-            <td>8</td>
-            <td>0.0</td>
-            <td>0.18</td>
-            <td class="response">08/09/1999</td>
-        </tr>
-        
-        <tr>
-            <td>granite3.2:8b</td>
-            <td>systeme</td>
-            <td>utilisateur</td>
-            <td>sources</td>
-            <td>68</td>
-            <td>0.0</td>
-            <td>0.17</td>
-            <td class="response">08/09/1999</td>
-        </tr>
-        
-        <tr>
-            <td>granite3.2:8b</td>
-            <td>systeme</td>
-            <td>utilisateur</td>
-            <td>sources</td>
-            <td>86</td>
-            <td>0.0</td>
-            <td>0.17</td>
-            <td class="response">08/09/1999</td>
-        </tr>
-        
-        <tr>
-            <td>granite3.2:8b</td>
-            <td>systeme</td>
-            <td>utilisateur</td>
-            <td>sources</td>
-            <td>668</td>
-            <td>0.0</td>
-            <td>0.18</td>
-            <td class="response">08/09/1999</td>
-        </tr>
-        
-        <tr>
-            <td>granite3.2:8b</td>
-            <td>systeme</td>
-            <td>utilisateur</td>
-            <td>sources</td>
-            <td>686</td>
-            <td>0.0</td>
-            <td>0.17</td>
-            <td class="response">08/09/1999</td>
-        </tr>
-        
-        <tr>
-            <td>granite3.2:8b</td>
-            <td>systeme</td>
-            <td>utilisateur</td>
-            <td>sources</td>
-            <td>886</td>
-            <td>0.0</td>
-            <td>0.17</td>
-            <td class="response">08/09/1999</td>
-        </tr>
-        
-        <tr>
-            <td>llama3.2:latest</td>
-            <td>systeme</td>
-            <td>utilisateur</td>
-            <td>sources</td>
-            <td>6</td>
-            <td>0.0</td>
-            <td>0.10</td>
-            <td class="response">08/09/1999</td>
-        </tr>
-        
-        <tr>
-            <td>llama3.2:latest</td>
-            <td>systeme</td>
-            <td>utilisateur</td>
-            <td>sources</td>
-            <td>8</td>
-            <td>0.0</td>
-            <td>0.11</td>
-            <td class="response">08/09/1999</td>
-        </tr>
-        
-        <tr>
-            <td>llama3.2:latest</td>
-            <td>systeme</td>
-            <td>utilisateur</td>
-            <td>sources</td>
-            <td>68</td>
-            <td>0.0</td>
-            <td>0.11</td>
-            <td class="response">08/09/1999</td>
-        </tr>
-        
-        <tr>
-            <td>llama3.2:latest</td>
-            <td>systeme</td>
-            <td>utilisateur</td>
-            <td>sources</td>
-            <td>86</td>
-            <td>0.0</td>
-            <td>0.11</td>
-            <td class="response">08/09/1999</td>
-        </tr>
-        
-        <tr>
-            <td>llama3.2:latest</td>
-            <td>systeme</td>
-            <td>utilisateur</td>
-            <td>sources</td>
-            <td>668</td>
-            <td>0.0</td>
-            <td>0.10</td>
-            <td class="response">08/09/1999</td>
-        </tr>
-        
-        <tr>
-            <td>llama3.2:latest</td>
-            <td>systeme</td>
-            <td>utilisateur</td>
-            <td>sources</td>
-            <td>686</td>
-            <td>0.0</td>
-            <td>0.10</td>
-            <td class="response">08/09/1999</td>
-        </tr>
-        
-        <tr>
-            <td>llama3.2:latest</td>
-            <td>systeme</td>
-            <td>utilisateur</td>
-            <td>sources</td>
-            <td>886</td>
-            <td>0.0</td>
-            <td>0.10</td>
-            <td class="response">08/09/1999</td>
-        </tr>
-        
-        <tr>
-            <td>mistral-small:24b</td>
-            <td>systeme</td>
-            <td>utilisateur</td>
-            <td>sources</td>
-            <td>6</td>
-            <td>0.0</td>
-            <td>0.33</td>
             <td class="response">09/09/1999</td>
         </tr>
         
@@ -1087,7 +1345,7 @@
             <td>sources</td>
             <td>68</td>
             <td>0.0</td>
-            <td>0.32</td>
+            <td>0.31</td>
             <td class="response">09/09/1999</td>
         </tr>
         
@@ -1098,7 +1356,7 @@
             <td>sources</td>
             <td>86</td>
             <td>0.0</td>
-            <td>0.32</td>
+            <td>0.31</td>
             <td class="response">09/09/1999</td>
         </tr>
         
@@ -1120,7 +1378,7 @@
             <td>sources</td>
             <td>686</td>
             <td>0.0</td>
-            <td>0.32</td>
+            <td>0.31</td>
             <td class="response">09/09/1999</td>
         </tr>
         
@@ -1131,7 +1389,7 @@
             <td>sources</td>
             <td>886</td>
             <td>0.0</td>
-            <td>0.32</td>
+            <td>0.31</td>
             <td class="response">09/09/1999</td>
         </tr>
         
@@ -1142,8 +1400,8 @@
             <td>sources</td>
             <td>6</td>
             <td>0.0</td>
-            <td>0.07</td>
-            <td class="response"><br> Date : 10/9/99</td>
+            <td>0.11</td>
+            <td class="response"><br> source 1 : 8/9/99 10:15 am Paris</td>
         </tr>
         
         <tr>
@@ -1153,8 +1411,8 @@
             <td>sources</td>
             <td>8</td>
             <td>0.0</td>
-            <td>0.08</td>
-            <td class="response"><br> Date : 10/9/99</td>
+            <td>0.10</td>
+            <td class="response"><br> source 1 : 8/9/99 10:15 am Paris</td>
         </tr>
         
         <tr>
@@ -1164,8 +1422,8 @@
             <td>sources</td>
             <td>68</td>
             <td>0.0</td>
-            <td>0.07</td>
-            <td class="response"><br> Date : 10/9/99</td>
+            <td>0.10</td>
+            <td class="response"><br> source 1 : 8/9/99 10:15 am Paris</td>
         </tr>
         
         <tr>
@@ -1175,8 +1433,8 @@
             <td>sources</td>
             <td>86</td>
             <td>0.0</td>
-            <td>0.08</td>
-            <td class="response"><br> Date : 10/9/99</td>
+            <td>0.09</td>
+            <td class="response"><br> source 1 : 8/9/99 10:15 am Paris</td>
         </tr>
         
         <tr>
@@ -1186,8 +1444,8 @@
             <td>sources</td>
             <td>668</td>
             <td>0.0</td>
-            <td>0.08</td>
-            <td class="response"><br> Date : 10/9/99</td>
+            <td>0.10</td>
+            <td class="response"><br> source 1 : 8/9/99 10:15 am Paris</td>
         </tr>
         
         <tr>
@@ -1197,8 +1455,8 @@
             <td>sources</td>
             <td>686</td>
             <td>0.0</td>
-            <td>0.07</td>
-            <td class="response"><br> Date : 10/9/99</td>
+            <td>0.10</td>
+            <td class="response"><br> source 1 : 8/9/99 10:15 am Paris</td>
         </tr>
         
         <tr>
@@ -1208,8 +1466,8 @@
             <td>sources</td>
             <td>886</td>
             <td>0.0</td>
-            <td>0.07</td>
-            <td class="response"><br> Date : 10/9/99</td>
+            <td>0.10</td>
+            <td class="response"><br> source 1 : 8/9/99 10:15 am Paris</td>
         </tr>
         
         <tr>
@@ -1219,8 +1477,8 @@
             <td>sources</td>
             <td>6</td>
             <td>0.0</td>
-            <td>0.12</td>
-            <td class="response">10/9/99</td>
+            <td>0.17</td>
+            <td class="response">08/09/1999</td>
         </tr>
         
         <tr>
@@ -1230,8 +1488,8 @@
             <td>sources</td>
             <td>8</td>
             <td>0.0</td>
-            <td>0.12</td>
-            <td class="response">10/9/99</td>
+            <td>0.14</td>
+            <td class="response">08/09/1999</td>
         </tr>
         
         <tr>
@@ -1241,8 +1499,8 @@
             <td>sources</td>
             <td>68</td>
             <td>0.0</td>
-            <td>0.12</td>
-            <td class="response">10/9/99</td>
+            <td>0.14</td>
+            <td class="response">08/09/1999</td>
         </tr>
         
         <tr>
@@ -1252,8 +1510,8 @@
             <td>sources</td>
             <td>86</td>
             <td>0.0</td>
-            <td>0.13</td>
-            <td class="response">10/9/99</td>
+            <td>0.14</td>
+            <td class="response">08/09/1999</td>
         </tr>
         
         <tr>
@@ -1263,8 +1521,8 @@
             <td>sources</td>
             <td>668</td>
             <td>0.0</td>
-            <td>0.12</td>
-            <td class="response">10/9/99</td>
+            <td>0.14</td>
+            <td class="response">08/09/1999</td>
         </tr>
         
         <tr>
@@ -1274,8 +1532,8 @@
             <td>sources</td>
             <td>686</td>
             <td>0.0</td>
-            <td>0.13</td>
-            <td class="response">10/9/99</td>
+            <td>0.14</td>
+            <td class="response">08/09/1999</td>
         </tr>
         
         <tr>
@@ -1285,8 +1543,8 @@
             <td>sources</td>
             <td>886</td>
             <td>0.0</td>
-            <td>0.12</td>
-            <td class="response">10/9/99</td>
+            <td>0.14</td>
+            <td class="response">08/09/1999</td>
         </tr>
         
         <tr>
@@ -1296,7 +1554,7 @@
             <td>sources</td>
             <td>6</td>
             <td>0.0</td>
-            <td>0.25</td>
+            <td>0.32</td>
             <td class="response">09/09/1999</td>
         </tr>
         
@@ -1318,7 +1576,7 @@
             <td>sources</td>
             <td>68</td>
             <td>0.0</td>
-            <td>0.25</td>
+            <td>0.26</td>
             <td class="response">09/09/1999</td>
         </tr>
         

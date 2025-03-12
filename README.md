@@ -18,12 +18,12 @@ Les meilleurs modèles que j'ai testé pour faire cela et qui semblent équivale
 - gemma2:latest (0.26s) 5.4 GB
 - qwen2.5:14b (0.26s) 9.0 GB
 - mistral-small:24b (0.31s) 14 GB
+- gemma3:latest (0.45) 3.3 GB
 - gemma3:12b (0.56) 8.1 GB
 - deepseek-r1:14b (7.69s) 9.0 GB
 
 Modèles qui ont échoué au test : 
-- granite3.2:8b
+- granite3.2:8b (incohérences selon la graine)
 - llama3.2:latest
 - moondream:latest
 - qwen2.5-coder:3b
-- gemma3:latest (!!) 3.3 GB
