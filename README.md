@@ -15,14 +15,16 @@ Pour le lancer : python evallm.py 9-9-99.json
 Dans ce Json le LLM doit deviner la date du 9/9/99 (mais elle n'est jamais dite précisément).
 
 Les meilleurs modèles que j'ai testé pour faire cela et qui semblent équivalent, triés par vitesse (temps moyen) : 
-- gemma2:latest (0.26s) 5.4 GB
-- qwen2.5:14b (0.26s) 9.0 GB
 - mistral-small:24b (0.31s) 14 GB
 - gemma3:latest (0.45) 3.3 GB
 - gemma3:12b (0.56) 8.1 GB
 - deepseek-r1:14b (7.69s) 9.0 GB
 
-Modèles qui ont échoué au test : 
+Modèles qui ont échoué au niveau "hard" : 
+- gemma2:latest (0.26s) 5.4 GB
+- qwen2.5:14b (0.26s) 9.0 GB
+
+Modèles qui ont échoué au test de base : 
 - granite3.2:8b (incohérences selon la graine)
 - llama3.2:latest
 - moondream:latest
