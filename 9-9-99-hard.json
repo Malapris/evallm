@@ -1,5 +1,5 @@
 {
-  "models": ["gemma2:latest", "gemma3:12b", "qwen2.5:14b", "mistral-small:24b"],
+  "models": ["gemma2:latest", "gemma3:12b", "qwen2.5:14b", "mistral-nemo:12b", "mistral-small:24b", "deepseek-r1:14b"],
   "system_prompts": {
     "systeme": "Tu es un expert en analyse de données et de textes, tu es très précis, tu ne laisses rien au hasard et tu donnes un seul résultat simple et synthétique."
   },

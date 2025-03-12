@@ -1,0 +1,951 @@
+
+    <!DOCTYPE html>
+    <html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Comparaison de LLM avec Ollama</title>
+        <style>
+            body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; background-color: #f8f9fa; }
+            h1 { color: #1a237e; text-align: center; margin-bottom: 30px; }
+            h2 { color: #283593; margin-top: 40px; border-bottom: 1px solid #c5cae9; padding-bottom: 10px; }
+            table { border-collapse: collapse; width: 100%; margin-bottom: 30px; background-color: white; box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
+            th, td { border: 1px solid #e0e0e0; padding: 12px; text-align: left; vertical-align: top; }
+            th { background-color: #e8eaf6; font-weight: bold; color: #1a237e; }
+            tr:nth-child(even) { background-color: #f5f5f5; }
+            tr:hover { background-color: #e8eaf6; }
+            .model-header { background-color: #3f51b5; color: white; }
+            .response { max-height: 300px; overflow-y: auto; white-space: pre-wrap; }
+            .metadata { background-color: white; padding: 15px; border-radius: 5px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
+            .summary-table th { text-align: center; }
+            .footer { text-align: center; margin-top: 50px; font-size: 0.8em; color: #5c6bc0; }
+            .temp-badge { display: inline-block; background-color: #5c6bc0; color: white; padding: 2px 6px; 
+                          border-radius: 3px; font-size: 0.8em; margin-left: 8px; }
+            .json-link { display: block; text-align: right; margin: 10px 0; color: #3f51b5; text-decoration: none; }
+            .json-link:hover { text-decoration: underline; }
+            .seed-variation-table { margin-top: 20px; }
+            .seed-header { background-color: #5c6bc0; color: white; }
+            .available-models-table { margin-top: 20px; }
+        </style>
+    </head>
+    <body>
+        <h1>Comparaison de Modèles LLM avec Ollama</h1>
+        <a href="9-9-99-hard_20250313_003027.json" class="json-link">📊 Voir les données brutes (JSON)</a>
+        <div class="metadata">
+            <p><strong>Date de génération:</strong> 2025-03-13 00:34:33</p>
+        </div>
+
+        <h2>Modèles Disponibles</h2>
+        <table class="available-models-table">
+            <tr class="model-header">
+                <th>Modèle</th>
+            </tr>
+    
+        <tr>
+            <td>mistral-nemo:12b</td>
+        </tr>
+        
+        <tr>
+            <td>MHKetbi/DeepSeek-R1-Distill-Llama-8B-NexaQuant:latest</td>
+        </tr>
+        
+        <tr>
+            <td>gemma3:12b</td>
+        </tr>
+        
+        <tr>
+            <td>mistral-small:24b</td>
+        </tr>
+        
+        <tr>
+            <td>gemma3:latest</td>
+        </tr>
+        
+        <tr>
+            <td>qwen2.5-coder:3b</td>
+        </tr>
+        
+        <tr>
+            <td>granite3.2:2b</td>
+        </tr>
+        
+        <tr>
+            <td>granite3.2:8b</td>
+        </tr>
+        
+        <tr>
+            <td>qwen2.5:14b</td>
+        </tr>
+        
+        <tr>
+            <td>gemma2:latest</td>
+        </tr>
+        
+        <tr>
+            <td>llama3.2-vision:11b</td>
+        </tr>
+        
+        <tr>
+            <td>deepseek-r1:14b</td>
+        </tr>
+        
+        <tr>
+            <td>phi4:latest</td>
+        </tr>
+        
+        <tr>
+            <td>nomic-embed-text:latest</td>
+        </tr>
+        
+        <tr>
+            <td>llama3.2:latest</td>
+        </tr>
+        
+        <tr>
+            <td>llava:latest</td>
+        </tr>
+        
+        <tr>
+            <td>dagbs/darkidol-llama-3.1-8b-instruct-1.0-uncensored:latest</td>
+        </tr>
+        
+        <tr>
+            <td>taozhiyuai/llama-3-8b-lexi-uncensored:f16</td>
+        </tr>
+        
+        <tr>
+            <td>nidumai/nidum-limitless-gemma-2b:latest</td>
+        </tr>
+        
+        <tr>
+            <td>moondream:latest</td>
+        </tr>
+        
+        <tr>
+            <td>martyyz/stable-prompt:latest</td>
+        </tr>
+        
+        <tr>
+            <td>impactframes/ifai_promptmkr_dolphin_phi3:latest</td>
+        </tr>
+        
+        <tr>
+            <td>impromptu2:latest</td>
+        </tr>
+        
+        <tr>
+            <td>impactframes/llama3_ifai_sd_prompt_mkr_q4km:latest</td>
+        </tr>
+        
+        <tr>
+            <td>impromptu:latest</td>
+        </tr>
+        
+        <tr>
+            <td>gemma:latest</td>
+        </tr>
+        
+        <tr>
+            <td>simone3:latest</td>
+        </tr>
+        
+    </table>
+    
+    <h2>Synthèse des Performances</h2>
+    <table class="summary-table">
+        <tr class="model-header">
+            <th>Modèle</th>
+            <th>Temps moyen (s)</th>
+            <th>Temps minimum (s)</th>
+            <th>Temps maximum (s)</th>
+            <th>Nombre de tokens moyen</th>
+        </tr>
+    
+        <tr>
+            <td>deepseek-r1:14b <span class="temp-badge">temp=0.0</span></td>
+            <td>10.70</td>
+            <td>7.24</td>
+            <td>24.43</td>
+            <td>336</td>
+        </tr>
+        
+        <tr>
+            <td>gemma2:latest <span class="temp-badge">temp=0.0</span></td>
+            <td>0.48</td>
+            <td>0.45</td>
+            <td>0.50</td>
+            <td>2</td>
+        </tr>
+        
+        <tr>
+            <td>gemma3:12b <span class="temp-badge">temp=0.0</span></td>
+            <td>0.53</td>
+            <td>0.45</td>
+            <td>0.62</td>
+            <td>1</td>
+        </tr>
+        
+        <tr>
+            <td>gemma3:latest <span class="temp-badge">temp=0.0</span></td>
+            <td>0.54</td>
+            <td>0.40</td>
+            <td>0.68</td>
+            <td>1</td>
+        </tr>
+        
+        <tr>
+            <td>mistral-nemo:12b <span class="temp-badge">temp=0.0</span></td>
+            <td>0.11</td>
+            <td>0.10</td>
+            <td>0.15</td>
+            <td>1</td>
+        </tr>
+        
+        <tr>
+            <td>mistral-small:24b <span class="temp-badge">temp=0.0</span></td>
+            <td>0.34</td>
+            <td>0.32</td>
+            <td>0.42</td>
+            <td>1</td>
+        </tr>
+        
+        <tr>
+            <td>qwen2.5:14b <span class="temp-badge">temp=0.0</span></td>
+            <td>0.30</td>
+            <td>0.28</td>
+            <td>0.36</td>
+            <td>1</td>
+        </tr>
+        
+    </table>
+    
+    <h2>Variations par Graine</h2>
+    
+        <h3>gemma2:latest (température: 0.0)</h3>
+        <table class="seed-variation-table">
+            <tr class="seed-header">
+                <th>Graine</th>
+                <th>Temps moyen (s)</th>
+                <th>Nombre de réponses</th>
+                <th>Longueur moyenne des réponses</th>
+            </tr>
+        
+            <tr>
+                <td>6</td>
+                <td>0.50</td>
+                <td>1</td>
+                <td>2 mots</td>
+            </tr>
+            
+            <tr>
+                <td>8</td>
+                <td>0.47</td>
+                <td>1</td>
+                <td>2 mots</td>
+            </tr>
+            
+            <tr>
+                <td>68</td>
+                <td>0.45</td>
+                <td>1</td>
+                <td>2 mots</td>
+            </tr>
+            
+            <tr>
+                <td>86</td>
+                <td>0.48</td>
+                <td>1</td>
+                <td>2 mots</td>
+            </tr>
+            
+            <tr>
+                <td>886</td>
+                <td>0.50</td>
+                <td>1</td>
+                <td>2 mots</td>
+            </tr>
+            
+        </table>
+        
+        <h3>gemma3:latest (température: 0.0)</h3>
+        <table class="seed-variation-table">
+            <tr class="seed-header">
+                <th>Graine</th>
+                <th>Temps moyen (s)</th>
+                <th>Nombre de réponses</th>
+                <th>Longueur moyenne des réponses</th>
+            </tr>
+        
+            <tr>
+                <td>6</td>
+                <td>0.51</td>
+                <td>1</td>
+                <td>1 mots</td>
+            </tr>
+            
+            <tr>
+                <td>8</td>
+                <td>0.49</td>
+                <td>1</td>
+                <td>1 mots</td>
+            </tr>
+            
+            <tr>
+                <td>68</td>
+                <td>0.60</td>
+                <td>1</td>
+                <td>1 mots</td>
+            </tr>
+            
+            <tr>
+                <td>86</td>
+                <td>0.68</td>
+                <td>1</td>
+                <td>1 mots</td>
+            </tr>
+            
+            <tr>
+                <td>886</td>
+                <td>0.40</td>
+                <td>1</td>
+                <td>1 mots</td>
+            </tr>
+            
+        </table>
+        
+        <h3>gemma3:12b (température: 0.0)</h3>
+        <table class="seed-variation-table">
+            <tr class="seed-header">
+                <th>Graine</th>
+                <th>Temps moyen (s)</th>
+                <th>Nombre de réponses</th>
+                <th>Longueur moyenne des réponses</th>
+            </tr>
+        
+            <tr>
+                <td>6</td>
+                <td>0.62</td>
+                <td>1</td>
+                <td>1 mots</td>
+            </tr>
+            
+            <tr>
+                <td>8</td>
+                <td>0.57</td>
+                <td>1</td>
+                <td>1 mots</td>
+            </tr>
+            
+            <tr>
+                <td>68</td>
+                <td>0.54</td>
+                <td>1</td>
+                <td>1 mots</td>
+            </tr>
+            
+            <tr>
+                <td>86</td>
+                <td>0.48</td>
+                <td>1</td>
+                <td>1 mots</td>
+            </tr>
+            
+            <tr>
+                <td>886</td>
+                <td>0.45</td>
+                <td>1</td>
+                <td>1 mots</td>
+            </tr>
+            
+        </table>
+        
+        <h3>qwen2.5:14b (température: 0.0)</h3>
+        <table class="seed-variation-table">
+            <tr class="seed-header">
+                <th>Graine</th>
+                <th>Temps moyen (s)</th>
+                <th>Nombre de réponses</th>
+                <th>Longueur moyenne des réponses</th>
+            </tr>
+        
+            <tr>
+                <td>6</td>
+                <td>0.36</td>
+                <td>1</td>
+                <td>1 mots</td>
+            </tr>
+            
+            <tr>
+                <td>8</td>
+                <td>0.29</td>
+                <td>1</td>
+                <td>1 mots</td>
+            </tr>
+            
+            <tr>
+                <td>68</td>
+                <td>0.28</td>
+                <td>1</td>
+                <td>1 mots</td>
+            </tr>
+            
+            <tr>
+                <td>86</td>
+                <td>0.28</td>
+                <td>1</td>
+                <td>1 mots</td>
+            </tr>
+            
+            <tr>
+                <td>886</td>
+                <td>0.29</td>
+                <td>1</td>
+                <td>1 mots</td>
+            </tr>
+            
+        </table>
+        
+        <h3>mistral-nemo:12b (température: 0.0)</h3>
+        <table class="seed-variation-table">
+            <tr class="seed-header">
+                <th>Graine</th>
+                <th>Temps moyen (s)</th>
+                <th>Nombre de réponses</th>
+                <th>Longueur moyenne des réponses</th>
+            </tr>
+        
+            <tr>
+                <td>6</td>
+                <td>0.15</td>
+                <td>1</td>
+                <td>1 mots</td>
+            </tr>
+            
+            <tr>
+                <td>8</td>
+                <td>0.10</td>
+                <td>1</td>
+                <td>1 mots</td>
+            </tr>
+            
+            <tr>
+                <td>68</td>
+                <td>0.10</td>
+                <td>1</td>
+                <td>1 mots</td>
+            </tr>
+            
+            <tr>
+                <td>86</td>
+                <td>0.10</td>
+                <td>1</td>
+                <td>1 mots</td>
+            </tr>
+            
+            <tr>
+                <td>886</td>
+                <td>0.10</td>
+                <td>1</td>
+                <td>1 mots</td>
+            </tr>
+            
+        </table>
+        
+        <h3>mistral-small:24b (température: 0.0)</h3>
+        <table class="seed-variation-table">
+            <tr class="seed-header">
+                <th>Graine</th>
+                <th>Temps moyen (s)</th>
+                <th>Nombre de réponses</th>
+                <th>Longueur moyenne des réponses</th>
+            </tr>
+        
+            <tr>
+                <td>6</td>
+                <td>0.42</td>
+                <td>1</td>
+                <td>1 mots</td>
+            </tr>
+            
+            <tr>
+                <td>8</td>
+                <td>0.32</td>
+                <td>1</td>
+                <td>1 mots</td>
+            </tr>
+            
+            <tr>
+                <td>68</td>
+                <td>0.32</td>
+                <td>1</td>
+                <td>1 mots</td>
+            </tr>
+            
+            <tr>
+                <td>86</td>
+                <td>0.33</td>
+                <td>1</td>
+                <td>1 mots</td>
+            </tr>
+            
+            <tr>
+                <td>886</td>
+                <td>0.32</td>
+                <td>1</td>
+                <td>1 mots</td>
+            </tr>
+            
+        </table>
+        
+        <h3>deepseek-r1:14b (température: 0.0)</h3>
+        <table class="seed-variation-table">
+            <tr class="seed-header">
+                <th>Graine</th>
+                <th>Temps moyen (s)</th>
+                <th>Nombre de réponses</th>
+                <th>Longueur moyenne des réponses</th>
+            </tr>
+        
+            <tr>
+                <td>6</td>
+                <td>24.43</td>
+                <td>1</td>
+                <td>762 mots</td>
+            </tr>
+            
+            <tr>
+                <td>8</td>
+                <td>7.24</td>
+                <td>1</td>
+                <td>229 mots</td>
+            </tr>
+            
+            <tr>
+                <td>68</td>
+                <td>7.27</td>
+                <td>1</td>
+                <td>229 mots</td>
+            </tr>
+            
+            <tr>
+                <td>86</td>
+                <td>7.29</td>
+                <td>1</td>
+                <td>229 mots</td>
+            </tr>
+            
+            <tr>
+                <td>886</td>
+                <td>7.25</td>
+                <td>1</td>
+                <td>229 mots</td>
+            </tr>
+            
+        </table>
+        
+    <h2>Résultats Détaillés</h2>
+    <table>
+        <tr class="model-header">
+            <th>Modèle</th>
+            <th>Système</th>
+            <th>Prompt</th>
+            <th>Contexte</th>
+            <th>Graine</th>
+            <th>Température</th>
+            <th>Temps (s)</th>
+            <th>Réponse</th>
+        </tr>
+    
+        <tr>
+            <td>deepseek-r1:14b</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>6</td>
+            <td>0.0</td>
+            <td>24.43</td>
+            <td class="response"><think><br>Okay, let's see. The user has given me five sources and wants the date from each in JJ/MM/AAAA format. I need to extract just the dates without any extra info.<br><br>Starting with source 1: It mentions taking the train to Paris in a past context and then biking in 2025. So, the date here is when they took the train, but it's not specified. The future reference is 2025, so maybe that's the date? But wait, the user wants the date from each source. Since the first part is past and the second is future, perhaps there's no specific date given in source 1.<br><br>Source 2: It says "C'était en 99." So that's 1999. Then it mentions a month after August 9th. Wait, August 9th would be 09/08/1999. But the user wants JJ/MM/AAAA, so I need to adjust that. The date mentioned is one month after August 9, 1999, which would be September 9, 1999? Or maybe it's just referring to the year as 1999 without a specific date.<br><br>Wait, source 2 says "C'était en 99" and then mentions a month after August 9th. So perhaps the main date is 1999, but there's also an exact date mentioned: one month after August 9th, which would be September 9th? Or maybe it's just the year.<br><br>Hmm, I'm a bit confused here. Let me parse this again. "C'était en 99, un mois après le 9 août." So in '99, one month after August 9th. So that would make it September 9th, 1999? Or is the main date just 1999?<br><br>Wait, no, because the user wants the date from each source. Source 2 gives a specific event: "un mois après le 9 août" which translates to one month after August 9th. So that would be September 9th, 1999.<br><br>But wait, in French, "le 9 août" is 09/08, so adding a month would make it 09/09? Or does it mean the same day next month? Hmm, maybe I should just take the year as 1999 since that's what "en 99" refers to.<br><br>Wait, no. The user wants the date from each source. So in source 2, there are two dates: one is 1999, and another is a month after August 9th, which would be September 9th, 1999. But I'm not sure if that's the case.<br><br>Wait, maybe it's better to take "en 99" as the year 1999, so the date would be 01/01/1999? Or perhaps there's no specific date given beyond the year.<br><br>I think I need to clarify. The user wants the date from each source. Source 2 mentions a time in '99 and a specific event one month after August 9th, but it doesn't give an exact date. So maybe the main date is just 1999.<br><br>Wait, no, because "un mois après le 9 août" would be September 9th, so that's 09/09/1999 in JJ/MM/YYYY format.<br><br>But I'm not entirely sure if that's what the user wants. Maybe they just want the year from source 2, which is 1999.<br><br>Moving on to source 3: It says "aujourd'hui je ne m'en souviens plus!" which means today, but no specific date given beyond that.<br><br>Source 4: "c'était déjà passé en 2020 !" So the date is 2020. But again, without a specific day or month, just the year.<br><br>Source 5: "jeudi il sera trop tard !" Which refers to Thursday, but no specific date given.<br><br>So putting it all together:<br><br>- Source 1: No specific date mentioned beyond future reference in 2025.<br>- Source 2: The exact date is September 9th, 1999 (09/09/1999).<br>- Source 3: No date provided.<br>- Source 4: Year 2020, but no specific date.<br>- Source 5: Refers to Thursday, but no date.<br><br>Wait, but the user wants each source's date. So for sources without a specific date, maybe I should indicate that there's no date or perhaps infer based on context.<br><br>Alternatively, maybe in source 1, "en 2025" is the future date, so that could be considered as the date from that source.<br><br>So:<br><br>Source 1: 2025 (but without day/month)<br>Source 2: 09/09/1999<br>Source 3: No date<br>Source 4: 2020 (year only)<br>Source 5: No date<br><br>But the user wants each source's date in JJ/MM/YYYY. So for sources without a specific date, perhaps I should leave it as "Aucune date" or similar.<br><br>Wait, looking back at the initial response, the assistant provided dates where possible and indicated no date otherwise. So maybe that's the approach to take.<br></think><br><br>Source 1 : Aucune date  <br>Source 2 : 09/09/1999  <br>Source 3 : Aucune date  <br>Source 4 : 01/01/2020  <br>Source 5 : Aucune date</td>
+        </tr>
+        
+        <tr>
+            <td>deepseek-r1:14b</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>8</td>
+            <td>0.0</td>
+            <td>7.24</td>
+            <td class="response"><think><br>Okay, let's see. The user has given me five sources and wants the date from each in JJ/MM/AAAA format. I need to extract just the dates without any extra info.<br><br>Starting with source 1: "C'était quand nous avons pris le train en pour aller à Paris, mais aujourdrhui en 2025 on y va en vélo." Hmm, there's a mention of 2025 here. So I think the date is 2025.<br><br>Source 2 says: "C'était en 99, un mois après le 9 aout, vers 10h15 je me souviens..." The year mentioned is 99, which is 1999. But there's no specific month or day given beyond the reference to August. So I'll go with 1999.<br><br>Source 3: "aujourd'hui je ne m'en souviens plus !" This doesn't provide any date information, so I can't extract a date here.<br><br>Source 4: "c'était déjà passé en 2020 ! " Again, the year is 2020. No specific month or day, so just 2020.<br><br>Source 5: "jeudi il sera trop tard !" This mentions Thursday but no date, so I can't extract a date from this source.<br><br>I need to make sure each entry only has the date in the specified format and nothing else. So for sources without dates, I'll leave them as N/A.<br></think><br><br>source 1 : 2025  <br>source 2 : 1999  <br>source 3 : N/A  <br>source 4 : 2020  <br>source 5 : N/A</td>
+        </tr>
+        
+        <tr>
+            <td>deepseek-r1:14b</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>68</td>
+            <td>0.0</td>
+            <td>7.27</td>
+            <td class="response"><think><br>Okay, let's see. The user has given me five sources and wants the date from each in JJ/MM/AAAA format. I need to extract just the dates without any extra info.<br><br>Starting with source 1: "C'était quand nous avons pris le train en pour aller à Paris, mais aujourdrhui en 2025 on y va en vélo." Hmm, there's a mention of 2025 here. So I think the date is 2025.<br><br>Source 2 says: "C'était en 99, un mois après le 9 aout, vers 10h15 je me souviens..." The year mentioned is 99, which is 1999. But there's no specific month or day given beyond the reference to August. So I'll go with 1999.<br><br>Source 3: "aujourd'hui je ne m'en souviens plus !" This doesn't provide any date information, so I can't extract a date here.<br><br>Source 4: "c'était déjà passé en 2020 ! " Again, the year is 2020. No specific month or day, so just 2020.<br><br>Source 5: "jeudi il sera trop tard !" This mentions Thursday but no date, so I can't extract a date from this source.<br><br>I need to make sure each entry only has the date in the specified format and nothing else. So for sources without dates, I'll leave them as N/A.<br></think><br><br>source 1 : 2025  <br>source 2 : 1999  <br>source 3 : N/A  <br>source 4 : 2020  <br>source 5 : N/A</td>
+        </tr>
+        
+        <tr>
+            <td>deepseek-r1:14b</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>86</td>
+            <td>0.0</td>
+            <td>7.29</td>
+            <td class="response"><think><br>Okay, let's see. The user has given me five sources and wants the date from each in JJ/MM/AAAA format. I need to extract just the dates without any extra info.<br><br>Starting with source 1: "C'était quand nous avons pris le train en pour aller à Paris, mais aujourdrhui en 2025 on y va en vélo." Hmm, there's a mention of 2025 here. So I think the date is 2025.<br><br>Source 2 says: "C'était en 99, un mois après le 9 aout, vers 10h15 je me souviens..." The year mentioned is 99, which is 1999. But there's no specific month or day given beyond the reference to August. So I'll go with 1999.<br><br>Source 3: "aujourd'hui je ne m'en souviens plus !" This doesn't provide any date information, so I can't extract a date here.<br><br>Source 4: "c'était déjà passé en 2020 ! " Again, the year is 2020. No specific month or day, so just 2020.<br><br>Source 5: "jeudi il sera trop tard !" This mentions Thursday but no date, so I can't extract a date from this source.<br><br>I need to make sure each entry only has the date in the specified format and nothing else. So for sources without dates, I'll leave them as N/A.<br></think><br><br>source 1 : 2025  <br>source 2 : 1999  <br>source 3 : N/A  <br>source 4 : 2020  <br>source 5 : N/A</td>
+        </tr>
+        
+        <tr>
+            <td>deepseek-r1:14b</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>886</td>
+            <td>0.0</td>
+            <td>7.25</td>
+            <td class="response"><think><br>Okay, let's see. The user has given me five sources and wants the date from each in JJ/MM/AAAA format. I need to extract just the dates without any extra info.<br><br>Starting with source 1: "C'était quand nous avons pris le train en pour aller à Paris, mais aujourdrhui en 2025 on y va en vélo." Hmm, there's a mention of 2025 here. So I think the date is 2025.<br><br>Source 2 says: "C'était en 99, un mois après le 9 aout, vers 10h15 je me souviens..." The year mentioned is 99, which is 1999. But there's no specific month or day given beyond the reference to August. So I'll go with 1999.<br><br>Source 3: "aujourd'hui je ne m'en souviens plus !" This doesn't provide any date information, so I can't extract a date here.<br><br>Source 4: "c'était déjà passé en 2020 ! " Again, the year is 2020. No specific month or day, so just 2020.<br><br>Source 5: "jeudi il sera trop tard !" This mentions Thursday but no date, so I can't extract a date from this source.<br><br>I need to make sure each entry only has the date in the specified format and nothing else. So for sources without dates, I'll leave them as N/A.<br></think><br><br>source 1 : 2025  <br>source 2 : 1999  <br>source 3 : N/A  <br>source 4 : 2020  <br>source 5 : N/A</td>
+        </tr>
+        
+        <tr>
+            <td>gemma2:latest</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>6</td>
+            <td>0.0</td>
+            <td>0.50</td>
+            <td class="response">18/09/1999<br>01/01/2020 <br></td>
+        </tr>
+        
+        <tr>
+            <td>gemma2:latest</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>8</td>
+            <td>0.0</td>
+            <td>0.47</td>
+            <td class="response">18/09/1999<br>01/01/2020 <br></td>
+        </tr>
+        
+        <tr>
+            <td>gemma2:latest</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>68</td>
+            <td>0.0</td>
+            <td>0.45</td>
+            <td class="response">18/09/1999<br>01/01/2020 <br></td>
+        </tr>
+        
+        <tr>
+            <td>gemma2:latest</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>86</td>
+            <td>0.0</td>
+            <td>0.48</td>
+            <td class="response">18/09/1999<br>01/01/2020 <br></td>
+        </tr>
+        
+        <tr>
+            <td>gemma2:latest</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>886</td>
+            <td>0.0</td>
+            <td>0.50</td>
+            <td class="response">18/09/1999<br>01/01/2020 <br></td>
+        </tr>
+        
+        <tr>
+            <td>gemma3:12b</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>6</td>
+            <td>0.0</td>
+            <td>0.62</td>
+            <td class="response">09/09/1999</td>
+        </tr>
+        
+        <tr>
+            <td>gemma3:12b</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>8</td>
+            <td>0.0</td>
+            <td>0.57</td>
+            <td class="response">09/09/1999</td>
+        </tr>
+        
+        <tr>
+            <td>gemma3:12b</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>68</td>
+            <td>0.0</td>
+            <td>0.54</td>
+            <td class="response">09/09/1999</td>
+        </tr>
+        
+        <tr>
+            <td>gemma3:12b</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>86</td>
+            <td>0.0</td>
+            <td>0.48</td>
+            <td class="response">09/09/1999</td>
+        </tr>
+        
+        <tr>
+            <td>gemma3:12b</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>886</td>
+            <td>0.0</td>
+            <td>0.45</td>
+            <td class="response">09/09/1999</td>
+        </tr>
+        
+        <tr>
+            <td>gemma3:latest</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>6</td>
+            <td>0.0</td>
+            <td>0.51</td>
+            <td class="response">09/08/1999<br></td>
+        </tr>
+        
+        <tr>
+            <td>gemma3:latest</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>8</td>
+            <td>0.0</td>
+            <td>0.49</td>
+            <td class="response">09/08/1999<br></td>
+        </tr>
+        
+        <tr>
+            <td>gemma3:latest</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>68</td>
+            <td>0.0</td>
+            <td>0.60</td>
+            <td class="response">09/08/1999<br></td>
+        </tr>
+        
+        <tr>
+            <td>gemma3:latest</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>86</td>
+            <td>0.0</td>
+            <td>0.68</td>
+            <td class="response">09/08/1999<br></td>
+        </tr>
+        
+        <tr>
+            <td>gemma3:latest</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>886</td>
+            <td>0.0</td>
+            <td>0.40</td>
+            <td class="response">09/08/1999<br></td>
+        </tr>
+        
+        <tr>
+            <td>mistral-nemo:12b</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>6</td>
+            <td>0.0</td>
+            <td>0.15</td>
+            <td class="response">Jeudi</td>
+        </tr>
+        
+        <tr>
+            <td>mistral-nemo:12b</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>8</td>
+            <td>0.0</td>
+            <td>0.10</td>
+            <td class="response">Jeudi</td>
+        </tr>
+        
+        <tr>
+            <td>mistral-nemo:12b</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>68</td>
+            <td>0.0</td>
+            <td>0.10</td>
+            <td class="response">Jeudi</td>
+        </tr>
+        
+        <tr>
+            <td>mistral-nemo:12b</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>86</td>
+            <td>0.0</td>
+            <td>0.10</td>
+            <td class="response">Jeudi</td>
+        </tr>
+        
+        <tr>
+            <td>mistral-nemo:12b</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>886</td>
+            <td>0.0</td>
+            <td>0.10</td>
+            <td class="response">Jeudi</td>
+        </tr>
+        
+        <tr>
+            <td>mistral-small:24b</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>6</td>
+            <td>0.0</td>
+            <td>0.42</td>
+            <td class="response">09/09/1999</td>
+        </tr>
+        
+        <tr>
+            <td>mistral-small:24b</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>8</td>
+            <td>0.0</td>
+            <td>0.32</td>
+            <td class="response">09/09/1999</td>
+        </tr>
+        
+        <tr>
+            <td>mistral-small:24b</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>68</td>
+            <td>0.0</td>
+            <td>0.32</td>
+            <td class="response">09/09/1999</td>
+        </tr>
+        
+        <tr>
+            <td>mistral-small:24b</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>86</td>
+            <td>0.0</td>
+            <td>0.33</td>
+            <td class="response">09/09/1999</td>
+        </tr>
+        
+        <tr>
+            <td>mistral-small:24b</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>886</td>
+            <td>0.0</td>
+            <td>0.32</td>
+            <td class="response">09/09/1999</td>
+        </tr>
+        
+        <tr>
+            <td>qwen2.5:14b</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>6</td>
+            <td>0.0</td>
+            <td>0.36</td>
+            <td class="response">10/09/2025</td>
+        </tr>
+        
+        <tr>
+            <td>qwen2.5:14b</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>8</td>
+            <td>0.0</td>
+            <td>0.29</td>
+            <td class="response">10/09/2025</td>
+        </tr>
+        
+        <tr>
+            <td>qwen2.5:14b</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>68</td>
+            <td>0.0</td>
+            <td>0.28</td>
+            <td class="response">10/09/2025</td>
+        </tr>
+        
+        <tr>
+            <td>qwen2.5:14b</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>86</td>
+            <td>0.0</td>
+            <td>0.28</td>
+            <td class="response">10/09/2025</td>
+        </tr>
+        
+        <tr>
+            <td>qwen2.5:14b</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>886</td>
+            <td>0.0</td>
+            <td>0.29</td>
+            <td class="response">10/09/2025</td>
+        </tr>
+        
+    </table>
+    
+        <div class="footer">
+            <p>Généré avec le script de comparaison LLM pour Ollama</p>
+        </div>
+    </body>
+    </html>
+    

@@ -30,9 +30,9 @@
     </head>
     <body>
         <h1>Comparaison de Modèles LLM avec Ollama</h1>
-        <a href="9-9-99-hard_20250313_001112.json" class="json-link">📊 Voir les données brutes (JSON)</a>
+        <a href="9-9-99-hard_20250313_002224.json" class="json-link">📊 Voir les données brutes (JSON)</a>
         <div class="metadata">
-            <p><strong>Date de génération:</strong> 2025-03-13 00:12:44</p>
+            <p><strong>Date de génération:</strong> 2025-03-13 00:25:36</p>
         </div>
 
         <h2>Modèles Disponibles</h2>
@@ -41,6 +41,10 @@
                 <th>Modèle</th>
             </tr>
     
+        <tr>
+            <td>mistral-nemo:12b</td>
+        </tr>
+        
         <tr>
             <td>MHKetbi/DeepSeek-R1-Distill-Llama-8B-NexaQuant:latest</td>
         </tr>
@@ -158,18 +162,34 @@
         </tr>
     
         <tr>
+            <td>deepseek-r1:14b <span class="temp-badge">temp=0.0</span></td>
+            <td>10.71</td>
+            <td>7.25</td>
+            <td>24.47</td>
+            <td>336</td>
+        </tr>
+        
+        <tr>
             <td>gemma2:latest <span class="temp-badge">temp=0.0</span></td>
-            <td>0.46</td>
+            <td>0.45</td>
             <td>0.43</td>
-            <td>0.51</td>
+            <td>0.49</td>
             <td>2</td>
         </tr>
         
         <tr>
             <td>gemma3:12b <span class="temp-badge">temp=0.0</span></td>
-            <td>0.50</td>
-            <td>0.46</td>
-            <td>0.56</td>
+            <td>0.48</td>
+            <td>0.45</td>
+            <td>0.55</td>
+            <td>1</td>
+        </tr>
+        
+        <tr>
+            <td>mistral-nemo:12b <span class="temp-badge">temp=0.0</span></td>
+            <td>0.11</td>
+            <td>0.10</td>
+            <td>0.16</td>
             <td>1</td>
         </tr>
         
@@ -183,9 +203,9 @@
         
         <tr>
             <td>qwen2.5:14b <span class="temp-badge">temp=0.0</span></td>
-            <td>0.28</td>
+            <td>0.29</td>
             <td>0.27</td>
-            <td>0.34</td>
+            <td>0.35</td>
             <td>1</td>
         </tr>
         
@@ -204,14 +224,14 @@
         
             <tr>
                 <td>6</td>
-                <td>0.51</td>
+                <td>0.49</td>
                 <td>1</td>
                 <td>2 mots</td>
             </tr>
             
             <tr>
                 <td>8</td>
-                <td>0.43</td>
+                <td>0.45</td>
                 <td>1</td>
                 <td>2 mots</td>
             </tr>
@@ -225,7 +245,7 @@
             
             <tr>
                 <td>86</td>
-                <td>0.44</td>
+                <td>0.43</td>
                 <td>1</td>
                 <td>2 mots</td>
             </tr>
@@ -250,35 +270,35 @@
         
             <tr>
                 <td>6</td>
-                <td>0.56</td>
+                <td>0.55</td>
                 <td>1</td>
                 <td>1 mots</td>
             </tr>
             
             <tr>
                 <td>8</td>
-                <td>0.53</td>
+                <td>0.47</td>
                 <td>1</td>
                 <td>1 mots</td>
             </tr>
             
             <tr>
                 <td>68</td>
-                <td>0.50</td>
+                <td>0.45</td>
                 <td>1</td>
                 <td>1 mots</td>
             </tr>
             
             <tr>
                 <td>86</td>
-                <td>0.46</td>
+                <td>0.45</td>
                 <td>1</td>
                 <td>1 mots</td>
             </tr>
             
             <tr>
                 <td>886</td>
-                <td>0.47</td>
+                <td>0.49</td>
                 <td>1</td>
                 <td>1 mots</td>
             </tr>
@@ -296,7 +316,7 @@
         
             <tr>
                 <td>6</td>
-                <td>0.34</td>
+                <td>0.35</td>
                 <td>1</td>
                 <td>1 mots</td>
             </tr>
@@ -310,21 +330,67 @@
             
             <tr>
                 <td>68</td>
-                <td>0.27</td>
+                <td>0.28</td>
                 <td>1</td>
                 <td>1 mots</td>
             </tr>
             
             <tr>
                 <td>86</td>
-                <td>0.27</td>
+                <td>0.28</td>
                 <td>1</td>
                 <td>1 mots</td>
             </tr>
             
             <tr>
                 <td>886</td>
-                <td>0.27</td>
+                <td>0.28</td>
+                <td>1</td>
+                <td>1 mots</td>
+            </tr>
+            
+        </table>
+        
+        <h3>mistral-nemo:12b (température: 0.0)</h3>
+        <table class="seed-variation-table">
+            <tr class="seed-header">
+                <th>Graine</th>
+                <th>Temps moyen (s)</th>
+                <th>Nombre de réponses</th>
+                <th>Longueur moyenne des réponses</th>
+            </tr>
+        
+            <tr>
+                <td>6</td>
+                <td>0.16</td>
+                <td>1</td>
+                <td>1 mots</td>
+            </tr>
+            
+            <tr>
+                <td>8</td>
+                <td>0.10</td>
+                <td>1</td>
+                <td>1 mots</td>
+            </tr>
+            
+            <tr>
+                <td>68</td>
+                <td>0.10</td>
+                <td>1</td>
+                <td>1 mots</td>
+            </tr>
+            
+            <tr>
+                <td>86</td>
+                <td>0.10</td>
+                <td>1</td>
+                <td>1 mots</td>
+            </tr>
+            
+            <tr>
+                <td>886</td>
+                <td>0.10</td>
                 <td>1</td>
                 <td>1 mots</td>
             </tr>
@@ -356,7 +422,7 @@
             
             <tr>
                 <td>68</td>
-                <td>0.32</td>
+                <td>0.33</td>
                 <td>1</td>
                 <td>1 mots</td>
             </tr>
@@ -377,6 +443,52 @@
             
         </table>
         
+        <h3>deepseek-r1:14b (température: 0.0)</h3>
+        <table class="seed-variation-table">
+            <tr class="seed-header">
+                <th>Graine</th>
+                <th>Temps moyen (s)</th>
+                <th>Nombre de réponses</th>
+                <th>Longueur moyenne des réponses</th>
+            </tr>
+        
+            <tr>
+                <td>6</td>
+                <td>24.47</td>
+                <td>1</td>
+                <td>762 mots</td>
+            </tr>
+            
+            <tr>
+                <td>8</td>
+                <td>7.29</td>
+                <td>1</td>
+                <td>229 mots</td>
+            </tr>
+            
+            <tr>
+                <td>68</td>
+                <td>7.30</td>
+                <td>1</td>
+                <td>229 mots</td>
+            </tr>
+            
+            <tr>
+                <td>86</td>
+                <td>7.26</td>
+                <td>1</td>
+                <td>229 mots</td>
+            </tr>
+            
+            <tr>
+                <td>886</td>
+                <td>7.25</td>
+                <td>1</td>
+                <td>229 mots</td>
+            </tr>
+            
+        </table>
+        
     <h2>Résultats Détaillés</h2>
     <table>
         <tr class="model-header">
@@ -391,13 +503,68 @@
         </tr>
     
         <tr>
+            <td>deepseek-r1:14b</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>6</td>
+            <td>0.0</td>
+            <td>24.47</td>
+            <td class="response"><think><br>Okay, let's see. The user has given me five sources and wants the date from each in JJ/MM/AAAA format. I need to extract just the dates without any extra info.<br><br>Starting with source 1: It mentions taking the train to Paris in a past context and then biking in 2025. So, the date here is when they took the train, but it's not specified. The future reference is 2025, so maybe that's the date? But wait, the user wants the date from each source. Since the first part is past and the second is future, perhaps there's no specific date given in source 1.<br><br>Source 2: It says "C'était en 99." So that's 1999. Then it mentions a month after August 9th. Wait, August 9th would be 09/08/1999. But the user wants JJ/MM/AAAA, so I need to adjust that. The date mentioned is one month after August 9, 1999, which would be September 9, 1999? Or maybe it's just referring to the year as 1999 without a specific date.<br><br>Wait, source 2 says "C'était en 99" and then mentions a month after August 9th. So perhaps the main date is 1999, but there's also an exact date mentioned: one month after August 9th, which would be September 9th? Or maybe it's just the year.<br><br>Hmm, I'm a bit confused here. Let me parse this again. "C'était en 99, un mois après le 9 août." So in '99, one month after August 9th. So that would make it September 9th, 1999? Or is the main date just 1999?<br><br>Wait, no, because the user wants the date from each source. Source 2 gives a specific event: "un mois après le 9 août" which translates to one month after August 9th. So that would be September 9th, 1999.<br><br>But wait, in French, "le 9 août" is 09/08, so adding a month would make it 09/09? Or does it mean the same day next month? Hmm, maybe I should just take the year as 1999 since that's what "en 99" refers to.<br><br>Wait, no. The user wants the date from each source. So in source 2, there are two dates: one is 1999, and another is a month after August 9th, which would be September 9th, 1999. But I'm not sure if that's the case.<br><br>Wait, maybe it's better to take "en 99" as the year 1999, so the date would be 01/01/1999? Or perhaps there's no specific date given beyond the year.<br><br>I think I need to clarify. The user wants the date from each source. Source 2 mentions a time in '99 and a specific event one month after August 9th, but it doesn't give an exact date. So maybe the main date is just 1999.<br><br>Wait, no, because "un mois après le 9 août" would be September 9th, so that's 09/09/1999 in JJ/MM/YYYY format.<br><br>But I'm not entirely sure if that's what the user wants. Maybe they just want the year from source 2, which is 1999.<br><br>Moving on to source 3: It says "aujourd'hui je ne m'en souviens plus!" which means today, but no specific date given beyond that.<br><br>Source 4: "c'était déjà passé en 2020 !" So the date is 2020. But again, without a specific day or month, just the year.<br><br>Source 5: "jeudi il sera trop tard !" Which refers to Thursday, but no specific date given.<br><br>So putting it all together:<br><br>- Source 1: No specific date mentioned beyond future reference in 2025.<br>- Source 2: The exact date is September 9th, 1999 (09/09/1999).<br>- Source 3: No date provided.<br>- Source 4: Year 2020, but no specific date.<br>- Source 5: Refers to Thursday, but no date.<br><br>Wait, but the user wants each source's date. So for sources without a specific date, maybe I should indicate that there's no date or perhaps infer based on context.<br><br>Alternatively, maybe in source 1, "en 2025" is the future date, so that could be considered as the date from that source.<br><br>So:<br><br>Source 1: 2025 (but without day/month)<br>Source 2: 09/09/1999<br>Source 3: No date<br>Source 4: 2020 (year only)<br>Source 5: No date<br><br>But the user wants each source's date in JJ/MM/YYYY. So for sources without a specific date, perhaps I should leave it as "Aucune date" or similar.<br><br>Wait, looking back at the initial response, the assistant provided dates where possible and indicated no date otherwise. So maybe that's the approach to take.<br></think><br><br>Source 1 : Aucune date  <br>Source 2 : 09/09/1999  <br>Source 3 : Aucune date  <br>Source 4 : 01/01/2020  <br>Source 5 : Aucune date</td>
+        </tr>
+        
+        <tr>
+            <td>deepseek-r1:14b</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>8</td>
+            <td>0.0</td>
+            <td>7.29</td>
+            <td class="response"><think><br>Okay, let's see. The user has given me five sources and wants the date from each in JJ/MM/AAAA format. I need to extract just the dates without any extra info.<br><br>Starting with source 1: "C'était quand nous avons pris le train en pour aller à Paris, mais aujourdrhui en 2025 on y va en vélo." Hmm, there's a mention of 2025 here. So I think the date is 2025.<br><br>Source 2 says: "C'était en 99, un mois après le 9 aout, vers 10h15 je me souviens..." The year mentioned is 99, which is 1999. But there's no specific month or day given beyond the reference to August. So I'll go with 1999.<br><br>Source 3: "aujourd'hui je ne m'en souviens plus !" This doesn't provide any date information, so I can't extract a date here.<br><br>Source 4: "c'était déjà passé en 2020 ! " Again, the year is 2020. No specific month or day, so just 2020.<br><br>Source 5: "jeudi il sera trop tard !" This mentions Thursday but no date, so I can't extract a date from this source.<br><br>I need to make sure each entry only has the date in the specified format and nothing else. So for sources without dates, I'll leave them as N/A.<br></think><br><br>source 1 : 2025  <br>source 2 : 1999  <br>source 3 : N/A  <br>source 4 : 2020  <br>source 5 : N/A</td>
+        </tr>
+        
+        <tr>
+            <td>deepseek-r1:14b</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>68</td>
+            <td>0.0</td>
+            <td>7.30</td>
+            <td class="response"><think><br>Okay, let's see. The user has given me five sources and wants the date from each in JJ/MM/AAAA format. I need to extract just the dates without any extra info.<br><br>Starting with source 1: "C'était quand nous avons pris le train en pour aller à Paris, mais aujourdrhui en 2025 on y va en vélo." Hmm, there's a mention of 2025 here. So I think the date is 2025.<br><br>Source 2 says: "C'était en 99, un mois après le 9 aout, vers 10h15 je me souviens..." The year mentioned is 99, which is 1999. But there's no specific month or day given beyond the reference to August. So I'll go with 1999.<br><br>Source 3: "aujourd'hui je ne m'en souviens plus !" This doesn't provide any date information, so I can't extract a date here.<br><br>Source 4: "c'était déjà passé en 2020 ! " Again, the year is 2020. No specific month or day, so just 2020.<br><br>Source 5: "jeudi il sera trop tard !" This mentions Thursday but no date, so I can't extract a date from this source.<br><br>I need to make sure each entry only has the date in the specified format and nothing else. So for sources without dates, I'll leave them as N/A.<br></think><br><br>source 1 : 2025  <br>source 2 : 1999  <br>source 3 : N/A  <br>source 4 : 2020  <br>source 5 : N/A</td>
+        </tr>
+        
+        <tr>
+            <td>deepseek-r1:14b</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>86</td>
+            <td>0.0</td>
+            <td>7.26</td>
+            <td class="response"><think><br>Okay, let's see. The user has given me five sources and wants the date from each in JJ/MM/AAAA format. I need to extract just the dates without any extra info.<br><br>Starting with source 1: "C'était quand nous avons pris le train en pour aller à Paris, mais aujourdrhui en 2025 on y va en vélo." Hmm, there's a mention of 2025 here. So I think the date is 2025.<br><br>Source 2 says: "C'était en 99, un mois après le 9 aout, vers 10h15 je me souviens..." The year mentioned is 99, which is 1999. But there's no specific month or day given beyond the reference to August. So I'll go with 1999.<br><br>Source 3: "aujourd'hui je ne m'en souviens plus !" This doesn't provide any date information, so I can't extract a date here.<br><br>Source 4: "c'était déjà passé en 2020 ! " Again, the year is 2020. No specific month or day, so just 2020.<br><br>Source 5: "jeudi il sera trop tard !" This mentions Thursday but no date, so I can't extract a date from this source.<br><br>I need to make sure each entry only has the date in the specified format and nothing else. So for sources without dates, I'll leave them as N/A.<br></think><br><br>source 1 : 2025  <br>source 2 : 1999  <br>source 3 : N/A  <br>source 4 : 2020  <br>source 5 : N/A</td>
+        </tr>
+        
+        <tr>
+            <td>deepseek-r1:14b</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>886</td>
+            <td>0.0</td>
+            <td>7.25</td>
+            <td class="response"><think><br>Okay, let's see. The user has given me five sources and wants the date from each in JJ/MM/AAAA format. I need to extract just the dates without any extra info.<br><br>Starting with source 1: "C'était quand nous avons pris le train en pour aller à Paris, mais aujourdrhui en 2025 on y va en vélo." Hmm, there's a mention of 2025 here. So I think the date is 2025.<br><br>Source 2 says: "C'était en 99, un mois après le 9 aout, vers 10h15 je me souviens..." The year mentioned is 99, which is 1999. But there's no specific month or day given beyond the reference to August. So I'll go with 1999.<br><br>Source 3: "aujourd'hui je ne m'en souviens plus !" This doesn't provide any date information, so I can't extract a date here.<br><br>Source 4: "c'était déjà passé en 2020 ! " Again, the year is 2020. No specific month or day, so just 2020.<br><br>Source 5: "jeudi il sera trop tard !" This mentions Thursday but no date, so I can't extract a date from this source.<br><br>I need to make sure each entry only has the date in the specified format and nothing else. So for sources without dates, I'll leave them as N/A.<br></think><br><br>source 1 : 2025  <br>source 2 : 1999  <br>source 3 : N/A  <br>source 4 : 2020  <br>source 5 : N/A</td>
+        </tr>
+        
+        <tr>
             <td>gemma2:latest</td>
             <td>systeme</td>
             <td>utilisateur</td>
             <td>sources</td>
             <td>6</td>
             <td>0.0</td>
-            <td>0.51</td>
+            <td>0.49</td>
             <td class="response">18/09/1999<br>01/01/2020 <br></td>
         </tr>
         
@@ -408,7 +575,7 @@
             <td>sources</td>
             <td>8</td>
             <td>0.0</td>
-            <td>0.43</td>
+            <td>0.45</td>
             <td class="response">18/09/1999<br>01/01/2020 <br></td>
         </tr>
         
@@ -430,7 +597,7 @@
             <td>sources</td>
             <td>86</td>
             <td>0.0</td>
-            <td>0.44</td>
+            <td>0.43</td>
             <td class="response">18/09/1999<br>01/01/2020 <br></td>
         </tr>
         
@@ -452,7 +619,7 @@
             <td>sources</td>
             <td>6</td>
             <td>0.0</td>
-            <td>0.56</td>
+            <td>0.55</td>
             <td class="response">09/09/1999</td>
         </tr>
         
@@ -463,7 +630,7 @@
             <td>sources</td>
             <td>8</td>
             <td>0.0</td>
-            <td>0.53</td>
+            <td>0.47</td>
             <td class="response">09/09/1999</td>
         </tr>
         
@@ -474,7 +641,7 @@
             <td>sources</td>
             <td>68</td>
             <td>0.0</td>
-            <td>0.50</td>
+            <td>0.45</td>
             <td class="response">09/09/1999</td>
         </tr>
         
@@ -485,7 +652,7 @@
             <td>sources</td>
             <td>86</td>
             <td>0.0</td>
-            <td>0.46</td>
+            <td>0.45</td>
             <td class="response">09/09/1999</td>
         </tr>
         
@@ -496,8 +663,63 @@
             <td>sources</td>
             <td>886</td>
             <td>0.0</td>
-            <td>0.47</td>
+            <td>0.49</td>
             <td class="response">09/09/1999</td>
+        </tr>
+        
+        <tr>
+            <td>mistral-nemo:12b</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>6</td>
+            <td>0.0</td>
+            <td>0.16</td>
+            <td class="response">Jeudi</td>
+        </tr>
+        
+        <tr>
+            <td>mistral-nemo:12b</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>8</td>
+            <td>0.0</td>
+            <td>0.10</td>
+            <td class="response">Jeudi</td>
+        </tr>
+        
+        <tr>
+            <td>mistral-nemo:12b</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>68</td>
+            <td>0.0</td>
+            <td>0.10</td>
+            <td class="response">Jeudi</td>
+        </tr>
+        
+        <tr>
+            <td>mistral-nemo:12b</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>86</td>
+            <td>0.0</td>
+            <td>0.10</td>
+            <td class="response">Jeudi</td>
+        </tr>
+        
+        <tr>
+            <td>mistral-nemo:12b</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>886</td>
+            <td>0.0</td>
+            <td>0.10</td>
+            <td class="response">Jeudi</td>
         </tr>
         
         <tr>
@@ -529,7 +751,7 @@
             <td>sources</td>
             <td>68</td>
             <td>0.0</td>
-            <td>0.32</td>
+            <td>0.33</td>
             <td class="response">09/09/1999</td>
         </tr>
         
@@ -562,7 +784,7 @@
             <td>sources</td>
             <td>6</td>
             <td>0.0</td>
-            <td>0.34</td>
+            <td>0.35</td>
             <td class="response">10/09/2025</td>
         </tr>
         
@@ -584,7 +806,7 @@
             <td>sources</td>
             <td>68</td>
             <td>0.0</td>
-            <td>0.27</td>
+            <td>0.28</td>
             <td class="response">10/09/2025</td>
         </tr>
         
@@ -595,7 +817,7 @@
             <td>sources</td>
             <td>86</td>
             <td>0.0</td>
-            <td>0.27</td>
+            <td>0.28</td>
             <td class="response">10/09/2025</td>
         </tr>
         
@@ -606,7 +828,7 @@
             <td>sources</td>
             <td>886</td>
             <td>0.0</td>
-            <td>0.27</td>
+            <td>0.28</td>
             <td class="response">10/09/2025</td>
         </tr>
         
