@@ -1,0 +1,137 @@
+
+    <!DOCTYPE html>
+    <html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Comparaison de LLM avec Ollama</title>
+        <style>
+            body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; background-color: #f8f9fa; }
+            h1 { color: #1a237e; text-align: center; margin-bottom: 30px; }
+            h2 { color: #283593; margin-top: 40px; border-bottom: 1px solid #c5cae9; padding-bottom: 10px; }
+            table { border-collapse: collapse; width: 100%; margin-bottom: 30px; background-color: white; box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
+            th, td { border: 1px solid #e0e0e0; padding: 12px; text-align: left; vertical-align: top; }
+            th { background-color: #e8eaf6; font-weight: bold; color: #1a237e; }
+            tr:nth-child(even) { background-color: #f5f5f5; }
+            tr:hover { background-color: #e8eaf6; }
+            .model-header { background-color: #3f51b5; color: white; }
+            .response { max-height: 300px; overflow-y: auto; white-space: pre-wrap; }
+            .metadata { background-color: white; padding: 15px; border-radius: 5px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
+            .summary-table th { text-align: center; }
+            .footer { text-align: center; margin-top: 50px; font-size: 0.8em; color: #5c6bc0; }
+            .temp-badge { display: inline-block; background-color: #5c6bc0; color: white; padding: 2px 6px; 
+                          border-radius: 3px; font-size: 0.8em; margin-left: 8px; }
+            .json-link { display: block; text-align: right; margin: 10px 0; color: #3f51b5; text-decoration: none; }
+            .json-link:hover { text-decoration: underline; }
+            .models-list { background-color: white; padding: 15px; border-radius: 5px; margin: 20px 0; 
+                          box-shadow: 0 1px 3px rgba(0,0,0,0.12); font-family: monospace; }
+        </style>
+    </head>
+    <body>
+        <h1>Comparaison de Modèles LLM avec Ollama</h1>
+        <a href="9-9-99-hard_20250313_082056.json" class="json-link">📊 Voir les données brutes (JSON)</a>
+        <div class="metadata">
+            <p><strong>Date de génération:</strong> 2025-03-13 08:22:18</p>
+        </div>
+
+        <h2>Modèles Disponibles</h2>
+        <div class="models-list">
+            ["omercelik/reka-flash-3:latest", "deepscaler:latest", "openthinker:7b", "mistral-nemo:12b", "MHKetbi/DeepSeek-R1-Distill-Llama-8B-NexaQuant:latest", "gemma3:12b", "mistral-small:24b", "gemma3:latest", "qwen2.5-coder:3b", "granite3.2:2b", "granite3.2:8b", "qwen2.5:14b", "gemma2:latest", "llama3.2-vision:11b", "deepseek-r1:14b", "phi4:latest", "nomic-embed-text:latest", "llama3.2:latest", "llava:latest", "dagbs/darkidol-llama-3.1-8b-instruct-1.0-uncensored:latest", "taozhiyuai/llama-3-8b-lexi-uncensored:f16", "nidumai/nidum-limitless-gemma-2b:latest", "moondream:latest", "martyyz/stable-prompt:latest", "impactframes/ifai_promptmkr_dolphin_phi3:latest", "impromptu2:latest", "impactframes/llama3_ifai_sd_prompt_mkr_q4km:latest", "impromptu:latest", "gemma:latest", "simone3:latest"]
+        </div>
+    
+    <h2>Synthèse des Performances</h2>
+    <table class="summary-table">
+        <tr class="model-header">
+            <th>Modèle</th>
+            <th>Temps moyen (s)</th>
+            <th>Temps minimum (s)</th>
+            <th>Temps maximum (s)</th>
+            <th>Nombre de tokens moyen</th>
+        </tr>
+    
+        <tr>
+            <td>omercelik/reka-flash-3 <span class="temp-badge">temp=0.0</span></td>
+            <td>12.12</td>
+            <td>12.07</td>
+            <td>12.23</td>
+            <td>381</td>
+        </tr>
+        
+    </table>
+    
+    <h2>Résultats Détaillés</h2>
+    <table>
+        <tr class="model-header">
+            <th>Modèle</th>
+            <th>Système</th>
+            <th>Prompt</th>
+            <th>Contexte</th>
+            <th>Graine</th>
+            <th>Température</th>
+            <th>Temps (s)</th>
+            <th>Réponse</th>
+        </tr>
+    
+        <tr>
+            <td>omercelik/reka-flash-3</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>6</td>
+            <td>0.0</td>
+            <td>12.13</td>
+            <td class="response"> <reasoning><br>Let's tackle this problem. The user wants me to extract dates from five different sources and format them as DD/MM/YYYY without any extra text. I'll go through each source one by one.<br><br>Starting with source 1: "C'était quand nous avons pris le train en pour aller à Paris, mais aujourd'hui en 2025 on y va en vélo." The key information here is the year 2025 mentioned in the present context. However, there's no specific day or month given. The user might be referring to when they took the train to Paris before switching to biking in 2025. But without a specific date, I can't extract a valid DD/MM/YYYY format. So maybe this source doesn't provide enough information.<br><br>Moving on to source 2: "C'était en 99, un mois après le 9 aout, vers 10h15 je me souviens, il faisait froid à Limoges." The year is written as '99', which I assume is 1999. Then it mentions a month after August 9th. If August 9th is the reference date, adding one month would be September. So the date would be around September 9th, 1999. But the exact day isn't specified beyond being a month after August 9th. However, since the user might consider the anniversary, maybe it's September 9th. So I can format that as 09/09/1999.<br><br>Source 3: "aujourd'hui je ne m'en souviens plus !" This translates to "today I don't remember anymore!" There's no date information here, so this source is useless for extracting a date.<br><br>Source 4: "c'était déjà passé en 2020 ! " It says "it had already passed in 2020." The year is 2020, but again, no specific day or month. Without more details, I can't determine the exact date.<br><br>Source 5: "jeudi il sera trop tard !" This means "Thursday it will be too late!" The day mentioned is Thursday, but there's no date or year provided. So this source also doesn't give enough information to extract a valid date.<br><br>So out of the five sources, only source 2 provides enough details to infer a possible date: September 9th, 1999. The other sources either lack specific dates or are too vague. I need to make sure that my answer only includes the formatted date from source 2 and nothing else, as per the user's instructions.<br></reasoning><br><br>09/09/1999<br><br> </td>
+        </tr>
+        
+        <tr>
+            <td>omercelik/reka-flash-3</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>8</td>
+            <td>0.0</td>
+            <td>12.07</td>
+            <td class="response"> <reasoning><br>Let's tackle this problem. The user wants me to extract dates from five different sources and format them as DD/MM/YYYY without any extra text. I'll go through each source one by one.<br><br>Starting with source 1: "C'était quand nous avons pris le train en pour aller à Paris, mais aujourd'hui en 2025 on y va en vélo." The key information here is the year 2025 mentioned in the present context. However, there's no specific day or month given. The user might be referring to when they took the train to Paris before switching to biking in 2025. But without a specific date, I can't extract a valid DD/MM/YYYY format. So maybe this source doesn't provide enough information.<br><br>Moving on to source 2: "C'était en 99, un mois après le 9 aout, vers 10h15 je me souviens, il faisait froid à Limoges." The year is written as '99', which I assume is 1999. Then it mentions a month after August 9th. If August 9th is the reference date, adding one month would be September. So the date would be around September 9th, 1999. But the exact day isn't specified beyond being a month after August 9th. However, since the user might consider the anniversary, maybe it's September 9th. So I can format that as 09/09/1999.<br><br>Source 3: "aujourd'hui je ne m'en souviens plus !" This translates to "today I don't remember anymore!" There's no date information here, so this source is useless for extracting a date.<br><br>Source 4: "c'était déjà passé en 2020 ! " It says "it had already passed in 2020." The year is 2020, but again, no specific day or month. Without more details, I can't determine the exact date.<br><br>Source 5: "jeudi il sera trop tard !" This means "Thursday it will be too late!" The day mentioned is Thursday, but there's no date or year provided. So this source also doesn't give enough information to extract a valid date.<br><br>So out of the five sources, only source 2 provides enough details to infer a possible date: September 9th, 1999. The other sources either lack specific dates or are too vague. I need to make sure that my answer only includes the formatted date from source 2 and nothing else, as per the user's instructions.<br></reasoning><br><br>09/09/1999<br><br> </td>
+        </tr>
+        
+        <tr>
+            <td>omercelik/reka-flash-3</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>68</td>
+            <td>0.0</td>
+            <td>12.10</td>
+            <td class="response"> <reasoning><br>Let's tackle this problem. The user wants me to extract dates from five different sources and format them as DD/MM/YYYY without any extra text. I'll go through each source one by one.<br><br>Starting with source 1: "C'était quand nous avons pris le train en pour aller à Paris, mais aujourd'hui en 2025 on y va en vélo." The key information here is the year 2025 mentioned in the present context. However, there's no specific day or month given. The user might be referring to when they took the train to Paris before switching to biking in 2025. But without a specific date, I can't extract a valid DD/MM/YYYY format. So maybe this source doesn't provide enough information.<br><br>Moving on to source 2: "C'était en 99, un mois après le 9 aout, vers 10h15 je me souviens, il faisait froid à Limoges." The year is written as '99', which I assume is 1999. Then it mentions a month after August 9th. If August 9th is the reference date, adding one month would be September. So the date would be around September 9th, 1999. But the exact day isn't specified beyond being a month after August 9th. However, since the user might consider the anniversary, maybe it's September 9th. So I can format that as 09/09/1999.<br><br>Source 3: "aujourd'hui je ne m'en souviens plus !" This translates to "today I don't remember anymore!" There's no date information here, so this source is useless for extracting a date.<br><br>Source 4: "c'était déjà passé en 2020 ! " It says "it had already passed in 2020." The year is 2020, but again, no specific day or month. Without more details, I can't determine the exact date.<br><br>Source 5: "jeudi il sera trop tard !" This means "Thursday it will be too late!" The day mentioned is Thursday, but there's no date or year provided. So this source also doesn't give enough information to extract a valid date.<br><br>So out of the five sources, only source 2 provides enough details to infer a possible date: September 9th, 1999. The other sources either lack specific dates or are too vague. I need to make sure that my answer only includes the formatted date from source 2 and nothing else, as per the user's instructions.<br></reasoning><br><br>09/09/1999<br><br> </td>
+        </tr>
+        
+        <tr>
+            <td>omercelik/reka-flash-3</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>86</td>
+            <td>0.0</td>
+            <td>12.07</td>
+            <td class="response"> <reasoning><br>Let's tackle this problem. The user wants me to extract dates from five different sources and format them as DD/MM/YYYY without any extra text. I'll go through each source one by one.<br><br>Starting with source 1: "C'était quand nous avons pris le train en pour aller à Paris, mais aujourd'hui en 2025 on y va en vélo." The key information here is the year 2025 mentioned in the present context. However, there's no specific day or month given. The user might be referring to when they took the train to Paris before switching to biking in 2025. But without a specific date, I can't extract a valid DD/MM/YYYY format. So maybe this source doesn't provide enough information.<br><br>Moving on to source 2: "C'était en 99, un mois après le 9 aout, vers 10h15 je me souviens, il faisait froid à Limoges." The year is written as '99', which I assume is 1999. Then it mentions a month after August 9th. If August 9th is the reference date, adding one month would be September. So the date would be around September 9th, 1999. But the exact day isn't specified beyond being a month after August 9th. However, since the user might consider the anniversary, maybe it's September 9th. So I can format that as 09/09/1999.<br><br>Source 3: "aujourd'hui je ne m'en souviens plus !" This translates to "today I don't remember anymore!" There's no date information here, so this source is useless for extracting a date.<br><br>Source 4: "c'était déjà passé en 2020 ! " It says "it had already passed in 2020." The year is 2020, but again, no specific day or month. Without more details, I can't determine the exact date.<br><br>Source 5: "jeudi il sera trop tard !" This means "Thursday it will be too late!" The day mentioned is Thursday, but there's no date or year provided. So this source also doesn't give enough information to extract a valid date.<br><br>So out of the five sources, only source 2 provides enough details to infer a possible date: September 9th, 1999. The other sources either lack specific dates or are too vague. I need to make sure that my answer only includes the formatted date from source 2 and nothing else, as per the user's instructions.<br></reasoning><br><br>09/09/1999<br><br> </td>
+        </tr>
+        
+        <tr>
+            <td>omercelik/reka-flash-3</td>
+            <td>systeme</td>
+            <td>utilisateur</td>
+            <td>sources</td>
+            <td>886</td>
+            <td>0.0</td>
+            <td>12.23</td>
+            <td class="response"> <reasoning><br>Let's tackle this problem. The user wants me to extract dates from five different sources and format them as DD/MM/YYYY without any extra text. I'll go through each source one by one.<br><br>Starting with source 1: "C'était quand nous avons pris le train en pour aller à Paris, mais aujourd'hui en 2025 on y va en vélo." The key information here is the year 2025 mentioned in the present context. However, there's no specific day or month given. The user might be referring to when they took the train to Paris before switching to biking in 2025. But without a specific date, I can't extract a valid DD/MM/YYYY format. So maybe this source doesn't provide enough information.<br><br>Moving on to source 2: "C'était en 99, un mois après le 9 aout, vers 10h15 je me souviens, il faisait froid à Limoges." The year is written as '99', which I assume is 1999. Then it mentions a month after August 9th. If August 9th is the reference date, adding one month would be September. So the date would be around September 9th, 1999. But the exact day isn't specified beyond being a month after August 9th. However, since the user might consider the anniversary, maybe it's September 9th. So I can format that as 09/09/1999.<br><br>Source 3: "aujourd'hui je ne m'en souviens plus !" This translates to "today I don't remember anymore!" There's no date information here, so this source is useless for extracting a date.<br><br>Source 4: "c'était déjà passé en 2020 ! " It says "it had already passed in 2020." The year is 2020, but again, no specific day or month. Without more details, I can't determine the exact date.<br><br>Source 5: "jeudi il sera trop tard !" This means "Thursday it will be too late!" The day mentioned is Thursday, but there's no date or year provided. So this source also doesn't give enough information to extract a valid date.<br><br>So out of the five sources, only source 2 provides enough details to infer a possible date: September 9th, 1999. The other sources either lack specific dates or are too vague. I need to make sure that my answer only includes the formatted date from source 2 and nothing else, as per the user's instructions.<br></reasoning><br><br>09/09/1999<br><br> </td>
+        </tr>
+        
+    </table>
+    
+        <div class="footer">
+            <p>Généré avec le script de comparaison LLM pour Ollama</p>
+        </div>
+    </body>
+    </html>
+    
