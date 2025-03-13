@@ -16,7 +16,8 @@ Dans ce Json le LLM doit deviner la date du 9/9/99 (mais elle n'est jamais dite 
 
 Les meilleurs modèles que j'ai testé pour faire cela, triés par vitesse (temps moyen) et taille : 
 - mistral-small:24b (0.31s) 14 GB
-- gemma3:12b (0.56) 8.1 GB
+- gemma3:12b (0.56s) 8.1 GB
+- omercelik/reka-flash-3 (12.12s) 13 GB
 
 Modèles qui ont échoué au niveau "hard" : 
 - gemma2:latest (0.26s) 5.4 GB
