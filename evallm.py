@@ -4,9 +4,18 @@ import json_repair
 import time
 import os
 import webbrowser
+import logging
 from datetime import datetime
 from tqdm import tqdm
 import argparse
+
+# Configuration du logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
+logger = logging.getLogger(__name__)
 
 def get_json_filename(html_filename):
     """Retourne le nom du fichier JSON correspondant au fichier HTML."""
@@ -27,6 +36,7 @@ def extract_model_names(ollama_response):
         for model in ollama_response.models:
             if hasattr(model, 'model'):
                 model_names.append(model.model)
+    logger.debug(f"Modèles extraits : {model_names}")
     return model_names
 
 def generate_html_report(results, output_file):
@@ -59,9 +69,8 @@ def generate_html_report(results, output_file):
                           border-radius: 3px; font-size: 0.8em; margin-left: 8px; }
             .json-link { display: block; text-align: right; margin: 10px 0; color: #3f51b5; text-decoration: none; }
             .json-link:hover { text-decoration: underline; }
-            .seed-variation-table { margin-top: 20px; }
-            .seed-header { background-color: #5c6bc0; color: white; }
-            .available-models-table { margin-top: 20px; }
+            .models-list { background-color: white; padding: 15px; border-radius: 5px; margin: 20px 0; 
+                          box-shadow: 0 1px 3px rgba(0,0,0,0.12); font-family: monospace; }
         </style>
     </head>
     <body>
@@ -72,23 +81,9 @@ def generate_html_report(results, output_file):
         </div>
 
         <h2>Modèles Disponibles</h2>
-        <table class="available-models-table">
-            <tr class="model-header">
-                <th>Modèle</th>
-            </tr>
-    """
-
-    # Ajouter les modèles disponibles au tableau
-    available_models_list = extract_model_names(ollama.list())
-    for model in available_models_list:
-        html += f"""
-        <tr>
-            <td>{model}</td>
-        </tr>
-        """
-
-    html += """
-    </table>
+        <div class="models-list">
+            """ + json.dumps(extract_model_names(ollama.list())) + """
+        </div>
     """
 
     # Regrouper les résultats par combinaison
@@ -150,51 +145,6 @@ def generate_html_report(results, output_file):
     </table>
     """
 
-    # Tableau des variations de graines par modèle
-    html += """
-    <h2>Variations par Graine</h2>
-    """
-
-    # Regrouper les résultats par modèle et température
-    model_seed_variations = {}
-    for result in results:
-        key = (result["model"], result["temperature"])
-        if key not in model_seed_variations:
-            model_seed_variations[key] = {}
-        if result["seed"] not in model_seed_variations[key]:
-            model_seed_variations[key][result["seed"]] = []
-        model_seed_variations[key][result["seed"]].append(result)
-
-    # Créer un tableau pour chaque modèle/température
-    for (model, temp), seed_data in model_seed_variations.items():
-        html += f"""
-        <h3>{model} (température: {temp})</h3>
-        <table class="seed-variation-table">
-            <tr class="seed-header">
-                <th>Graine</th>
-                <th>Temps moyen (s)</th>
-                <th>Nombre de réponses</th>
-                <th>Longueur moyenne des réponses</th>
-            </tr>
-        """
-        
-        for seed, results_for_seed in seed_data.items():
-            avg_time = sum(r["response_time"] for r in results_for_seed) / len(results_for_seed)
-            avg_length = sum(len(r["response"].split()) for r in results_for_seed) / len(results_for_seed)
-            
-            html += f"""
-            <tr>
-                <td>{seed}</td>
-                <td>{avg_time:.2f}</td>
-                <td>{len(results_for_seed)}</td>
-                <td>{avg_length:.0f} mots</td>
-            </tr>
-            """
-        
-        html += """
-        </table>
-        """
-
     # Tableaux de comparaison pour chaque combinaison
     html += """
     <h2>Résultats Détaillés</h2>
@@ -254,6 +204,7 @@ def generate_html_report(results, output_file):
 
 def warmup_model(model, system_prompt, user_prompt, context=""):
     """Préchauffage du modèle avec une graine 0."""
+    logger.info(f"Préchauffage du modèle {model}...")
     full_prompt = f"{context}\n\n{user_prompt}" if context else user_prompt
     try:
         messages = [
@@ -268,12 +219,14 @@ def warmup_model(model, system_prompt, user_prompt, context=""):
                 "temperature": 0.7
             }
         )
+        logger.info(f"Préchauffage réussi pour {model}")
     except Exception as e:
-        print(f"Avertissement lors du préchauffage de {model}: {e}")
+        logger.warning(f"Avertissement lors du préchauffage de {model}: {e}")
 
 def compare_llms(config_file, output_file=None):
     """Compare différents LLM en utilisant Ollama selon la configuration spécifiée."""
     
+    logger.info(f"Chargement de la configuration depuis {config_file}")
     # Charger la configuration depuis le fichier JSON
     with open(config_file, 'r', encoding='utf-8') as f:
         config = json_repair.load(f)
@@ -283,35 +236,36 @@ def compare_llms(config_file, output_file=None):
         base_name = os.path.splitext(os.path.basename(config_file))[0]
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         output_file = f"{base_name}_{timestamp}.html"
+        logger.info(f"Fichier de sortie automatiquement défini : {output_file}")
     
     models = config.get("models", [])
     system_prompts = config.get("system_prompts", {})
     user_prompts = config.get("user_prompts", {})
     contexts = config.get("contexts", {})
     seeds = config.get("seeds", [42])
-    temperatures = config.get("temperatures", [0.7])  # Valeur par défaut si non spécifiée
-    
-    # Variable pour stocker la liste des modèles disponibles
-    available_models_list = []
+    temperatures = config.get("temperatures", [0.7])
+
+    logger.info(f"Configuration chargée : {len(models)} modèles, {len(system_prompts)} prompts système, "
+                f"{len(user_prompts)} prompts utilisateur, {len(contexts)} contextes")
     
     # Vérifier que les modèles sont disponibles dans Ollama
     try:
+        logger.info("Vérification des modèles disponibles...")
         available_models_response = ollama.list()
         available_models = extract_model_names(available_models_response)
-        available_models_list = available_models  # Sauvegarder la liste complète
         
         for model in models:
-            base_model = model
-            if base_model not in available_models:
-                print(f"Attention: Le modèle '{model}' n'est pas disponible. Utilisez 'ollama pull {model}' pour le télécharger.")
+            if model not in available_models:
+                logger.warning(f"Le modèle '{model}' n'est pas disponible. Utilisez 'ollama pull {model}' pour le télécharger.")
                 
     except Exception as e:
-        print(f"Erreur lors de la vérification des modèles: {e}")
-        print("Assurez-vous qu'Ollama est installé et en cours d'exécution.")
+        logger.error(f"Erreur lors de la vérification des modèles: {e}")
+        logger.error("Assurez-vous qu'Ollama est installé et en cours d'exécution.")
         return []
     
     # Calculer le nombre total d'itérations
     total_iterations = len(models) * len(system_prompts) * len(user_prompts) * len(contexts) * len(seeds) * len(temperatures)
+    logger.info(f"Nombre total d'itérations à effectuer : {total_iterations}")
     results = []
     
     # Générer les réponses pour chaque combinaison
@@ -320,7 +274,7 @@ def compare_llms(config_file, output_file=None):
         for model in models:
             # Préchauffer le modèle si on change de modèle
             if current_model != model:
-                print(f"\nPréchauffage du modèle {model}...")
+                logger.info(f"Changement de modèle : passage à {model}")
                 # Utiliser le premier prompt système et utilisateur disponible pour le préchauffage
                 first_sys_prompt = next(iter(system_prompts.values()))
                 first_user_prompt = next(iter(user_prompts.values()))
@@ -333,6 +287,7 @@ def compare_llms(config_file, output_file=None):
                     for ctx_id, context in contexts.items():
                         for seed in seeds:
                             for temperature in temperatures:
+                                logger.debug(f"Génération pour {model} (seed={seed}, temp={temperature})")
                                 # Construire le prompt complet avec contexte si nécessaire
                                 full_prompt = user_prompt
                                 if context:
@@ -355,6 +310,9 @@ def compare_llms(config_file, output_file=None):
                                         }
                                     )
                                     
+                                    elapsed_time = time.time() - start_time
+                                    logger.debug(f"Réponse générée en {elapsed_time:.2f}s")
+                                    
                                     # Enregistrer les détails de la réponse
                                     result = {
                                         "model": model,
@@ -367,10 +325,10 @@ def compare_llms(config_file, output_file=None):
                                         "seed": seed,
                                         "temperature": temperature,
                                         "response": response["message"]["content"],
-                                        "response_time": time.time() - start_time
+                                        "response_time": elapsed_time
                                     }
                                 except Exception as e:
-                                    print(f"Erreur avec {model} (temp={temperature}): {e}")
+                                    logger.error(f"Erreur avec {model} (temp={temperature}): {e}")
                                     result = {
                                         "model": model,
                                         "system_prompt": system_prompt,
@@ -388,22 +346,26 @@ def compare_llms(config_file, output_file=None):
                                 results.append(result)
                                 pbar.update(1)
     
+    logger.info("Génération des réponses terminée")
+    
     # Générer et sauvegarder le rapport HTML
+    logger.info("Génération du rapport HTML...")
     html_content = generate_html_report(results, output_file)
     with open(output_file, 'w', encoding='utf-8') as f:
         f.write(html_content)
     
-    print(f"Rapport HTML sauvegardé dans {output_file}")
+    logger.info(f"Rapport HTML sauvegardé dans {output_file}")
     
     # Sauvegarder les données brutes en JSON pour d'éventuelles analyses ultérieures
     json_output = get_json_filename(output_file)
     with open(json_output, 'w', encoding='utf-8') as f:
         json.dump(results, f, indent=2, ensure_ascii=False)
     
-    print(f"Données brutes sauvegardées dans {json_output}")
+    logger.info(f"Données brutes sauvegardées dans {json_output}")
     
     # Ouvrir le fichier HTML dans le navigateur par défaut
     webbrowser.open('file://' + os.path.abspath(output_file))
+    logger.info("Rapport ouvert dans le navigateur")
     
     return results
 
@@ -412,7 +374,12 @@ def main():
     parser = argparse.ArgumentParser(description="Comparer des LLM avec Ollama et générer un rapport HTML")
     parser.add_argument("config", help="Fichier de configuration JSON")
     parser.add_argument("--output", "-o", help="Fichier de sortie HTML (optionnel)")
+    parser.add_argument("--debug", action="store_true", help="Activer le mode debug")
     args = parser.parse_args()
+    
+    if args.debug:
+        logger.setLevel(logging.DEBUG)
+        logger.debug("Mode debug activé")
     
     compare_llms(args.config, args.output)
 
