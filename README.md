@@ -40,3 +40,4 @@ Modèles qui ont échoué au test de base :
 - llama3.2:latest
 - moondream:latest
 - qwen2.5-coder:3b
+- stablelm2:1.6b
