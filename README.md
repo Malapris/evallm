@@ -10,6 +10,8 @@ Ce script (que j'ai fait ce soir en 1H avec Cursor) permet de comparer les résu
 - sortie en html sympa et en json [V3.0] : amélioration de la sortie html
 - fichier de configuration simple en json (ex : 9-9-99 où le llm doit deviner cette date à partir de phrases approximatives)
 
+![image](https://github.com/user-attachments/assets/b373ca38-4911-4d4c-b15d-e97743717f29)
+
 Librairies nécessaires : 
 ollama>=0.1.6
 json-repair>=0.2.0
