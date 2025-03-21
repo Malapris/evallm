@@ -22,6 +22,7 @@ Les meilleurs modèles que j'ai testé pour faire cela, triés par vitesse (temp
 Modèles qui ont échoué au niveau "hard" : 
 - gemma2:latest (0.26s) 5.4 GB
 - qwen2.5:14b (0.26s) 9.0 GB
+- technobyte/Llama-3.3-70B-Abliterated:IQ2_XXS (0.46s) 19GB
 - deepseek-r1:14b (7.69s) 9.0 GB
 - mistral-nemo:12b (0.11s) 7.1 GB
 - gemma3:latest (0.45s) 3.3 GB
