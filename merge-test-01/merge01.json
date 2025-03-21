@@ -1,0 +1,15 @@
+{
+  "models": [ "technobyte/Llama-3.3-70B-Abliterated:IQ2_XXS" ],
+  "system_prompts": {
+    "systeme": "systeme.md"
+  },
+  "user_prompts": {
+    "utilisateur": "utilisateur.md"
+  },
+  "contexts": {
+    "context": "context.md"
+  },
+  "seeds": [6,68,886],
+  "temperatures": [0.0]
+
+}

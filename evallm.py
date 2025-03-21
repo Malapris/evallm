@@ -21,6 +21,24 @@ def get_json_filename(html_filename):
     """Retourne le nom du fichier JSON correspondant au fichier HTML."""
     return os.path.splitext(os.path.basename(html_filename))[0] + ".json"
 
+def read_content_from_file_if_exists(content):
+    """
+    Vérifie si la chaîne de caractères est un nom de fichier existant.
+    Si oui, lit et retourne le contenu du fichier.
+    Sinon, retourne la chaîne d'origine.
+    """
+    # Vérifier si la chaîne ressemble à un chemin de fichier
+    if isinstance(content, str) and os.path.exists(content) and os.path.isfile(content):
+        try:
+            logger.info(f"Lecture du contenu depuis le fichier: {content}")
+            with open(content, 'r', encoding='utf-8') as f:
+                return f.read()
+        except Exception as e:
+            logger.error(f"Erreur lors de la lecture du fichier {content}: {e}")
+            # En cas d'erreur, on retourne le contenu original
+            return content
+    return content
+
 def extract_model_names(ollama_response):
     """
     Extrait les noms des modèles à partir de la réponse d'ollama.list()
@@ -71,6 +89,9 @@ def generate_html_report(results, output_file):
             .json-link:hover { text-decoration: underline; }
             .models-list { background-color: white; padding: 15px; border-radius: 5px; margin: 20px 0; 
                           box-shadow: 0 1px 3px rgba(0,0,0,0.12); font-family: monospace; }
+            .input-data { background-color: white; padding: 15px; border-radius: 5px; margin: 20px 0;
+                         box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
+            .input-content { white-space: pre-wrap; background-color: #f5f5f5; padding: 10px; border-left: 4px solid #3f51b5; margin: 10px 0; }
         </style>
     </head>
     <body>
@@ -78,11 +99,6 @@ def generate_html_report(results, output_file):
         <a href=\"""" + json_filename + """\" class="json-link">📊 Voir les données brutes (JSON)</a>
         <div class="metadata">
             <p><strong>Date de génération:</strong> """ + datetime.now().strftime("%Y-%m-%d %H:%M:%S") + """</p>
-        </div>
-
-        <h2>Modèles Disponibles</h2>
-        <div class="models-list">
-            """ + json.dumps(extract_model_names(ollama.list())) + """
         </div>
     """
 
@@ -144,6 +160,70 @@ def generate_html_report(results, output_file):
     html += """
     </table>
     """
+    
+    # Afficher les données d'entrée (prompts et contextes)
+    html += """
+    <h2>Données d'Entrée</h2>
+    <div class="input-data">
+    """
+    
+    # Extraire les prompts système uniques
+    unique_system_prompts = {}
+    for result in results:
+        if result["system_prompt_id"] not in unique_system_prompts:
+            unique_system_prompts[result["system_prompt_id"]] = result["system_prompt"]
+    
+    html += """
+        <h3>Prompts Système</h3>
+    """
+    
+    for sys_id, content in unique_system_prompts.items():
+        html += f"""
+        <p><strong>{sys_id}</strong></p>
+        <div class="input-content">{content}</div>
+        """
+    
+    # Extraire les prompts utilisateur uniques
+    unique_user_prompts = {}
+    for result in results:
+        if result["user_prompt_id"] not in unique_user_prompts:
+            unique_user_prompts[result["user_prompt_id"]] = result["user_prompt"]
+    
+    html += """
+        <h3>Prompts Utilisateur</h3>
+    """
+    
+    for prompt_id, content in unique_user_prompts.items():
+        html += f"""
+        <p><strong>{prompt_id}</strong></p>
+        <div class="input-content">{content}</div>
+        """
+    
+    # Extraire les contextes uniques
+    unique_contexts = {}
+    for result in results:
+        if result["context_id"] not in unique_contexts:
+            unique_contexts[result["context_id"]] = result["context"]
+    
+    html += """
+        <h3>Contextes</h3>
+    """
+    
+    for ctx_id, content in unique_contexts.items():
+        # N'afficher le contexte que s'il n'est pas vide
+        if content.strip():
+            html += f"""
+            <p><strong>{ctx_id}</strong></p>
+            <div class="input-content">{content}</div>
+            """
+        else:
+            html += f"""
+            <p><strong>{ctx_id}</strong>: <em>Aucun contexte</em></p>
+            """
+    
+    html += """
+    </div>
+    """
 
     # Tableaux de comparaison pour chaque combinaison
     html += """
@@ -191,6 +271,14 @@ def generate_html_report(results, output_file):
     html += """
     </table>
     """
+    
+    # Ajouter la liste des modèles à la fin
+    html += """
+    <h2>Modèles Disponibles</h2>
+    <div class="models-list">
+        """ + json.dumps(extract_model_names(ollama.list())) + """
+    </div>
+    """
 
     html += """
         <div class="footer">
@@ -224,7 +312,40 @@ def warmup_model(model, system_prompt, user_prompt, context=""):
         logger.warning(f"Avertissement lors du préchauffage de {model}: {e}")
 
 def compare_llms(config_file, output_file=None):
-    """Compare différents LLM en utilisant Ollama selon la configuration spécifiée."""
+    """Compare différents LLM en utilisant Ollama selon la configuration spécifiée.
+    
+    Args:
+        config_file (str): Chemin vers le fichier de configuration JSON
+        output_file (str, optional): Chemin pour le fichier de sortie HTML.
+            Si non spécifié, un nom sera généré automatiquement.
+    
+    Returns:
+        list: Liste des résultats de chaque combinaison de test
+        
+    Exemple de configuration JSON:
+    ```json
+    {
+        "models": ["llama3", "mistral"],
+        "system_prompts": {
+            "standard": "Tu es un assistant IA utile et précis.",
+            "from_file": "prompts/system_expert.txt"
+        },
+        "user_prompts": {
+            "question1": "Explique-moi la photosynthèse",
+            "from_file": "prompts/question_complex.txt"
+        },
+        "contexts": {
+            "none": "",
+            "from_file": "contexts/biology_context.txt"
+        },
+        "seeds": [42, 123],
+        "temperatures": [0.0, 0.7]
+    }
+    ```
+    
+    Note: Les valeurs dans system_prompts, user_prompts et contexts peuvent être soit des 
+    chaînes directes, soit des chemins vers des fichiers dont le contenu sera lu.
+    """
     
     logger.info(f"Chargement de la configuration depuis {config_file}")
     # Charger la configuration depuis le fichier JSON
@@ -239,11 +360,27 @@ def compare_llms(config_file, output_file=None):
         logger.info(f"Fichier de sortie automatiquement défini : {output_file}")
     
     models = config.get("models", [])
-    system_prompts = config.get("system_prompts", {})
-    user_prompts = config.get("user_prompts", {})
-    contexts = config.get("contexts", {})
+    system_prompts_config = config.get("system_prompts", {})
+    user_prompts_config = config.get("user_prompts", {})
+    contexts_config = config.get("contexts", {})
     seeds = config.get("seeds", [42])
     temperatures = config.get("temperatures", [0.7])
+    
+    # Traiter les fichiers pour les prompts système, utilisateur et contextes
+    # NOTE: Les valeurs dans system_prompts, user_prompts et contexts peuvent être:
+    # 1. Des chaînes de caractères directes à utiliser comme prompts/contextes
+    # 2. Des chemins vers des fichiers dont le contenu sera lu et utilisé
+    system_prompts = {}
+    for sys_id, content in system_prompts_config.items():
+        system_prompts[sys_id] = read_content_from_file_if_exists(content)
+    
+    user_prompts = {}
+    for prompt_id, content in user_prompts_config.items():
+        user_prompts[prompt_id] = read_content_from_file_if_exists(content)
+    
+    contexts = {}
+    for ctx_id, content in contexts_config.items():
+        contexts[ctx_id] = read_content_from_file_if_exists(content)
 
     logger.info(f"Configuration chargée : {len(models)} modèles, {len(system_prompts)} prompts système, "
                 f"{len(user_prompts)} prompts utilisateur, {len(contexts)} contextes")
