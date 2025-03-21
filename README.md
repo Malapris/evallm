@@ -10,11 +10,14 @@ Ce script (que j'ai fait ce soir en 1H avec Cursor) permet de comparer les résu
 - sortie en html sympa et en json [V3.0] : amélioration de la sortie html
 - fichier de configuration simple en json (ex : 9-9-99 où le llm doit deviner cette date à partir de phrases approximatives)
 
-Présentation
+Présentation :
 ![image](https://github.com/user-attachments/assets/b373ca38-4911-4d4c-b15d-e97743717f29)
 
-Synthèse des résultats en temps de réponse et tokens
+Synthèse des résultats en temps de réponse et tokens :
 ![image](https://github.com/user-attachments/assets/94d67346-2865-4405-a84e-d42be7478b59)
+
+Comparaison des variations suivant la graine :
+![image](https://github.com/user-attachments/assets/a6ee73e9-9299-46f2-9b87-bd67712c4940)
 
 
 Librairies nécessaires : 
