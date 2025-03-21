@@ -1,4 +1,4 @@
-# evallm
+# evallm : prompt + temperature + model benchmarks
 (see below for english)
 
 Script python pour l'évaluation des llm avec des requêtes précises en mode batch où l'on peut tester sur plusieurs prompts, données, températures, graines, etc.
