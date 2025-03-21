@@ -1,4 +1,6 @@
 # evallm
+(see below for english)
+
 Script python pour l'évaluation des llm avec des requêtes précises en mode batch où l'on peut tester sur plusieurs prompts, données, températures, graines, etc.
 
 Ce script (que j'ai fait ce soir en 1H avec Cursor) permet de comparer les résultats de plusieurs LLM :
@@ -240,4 +242,5 @@ The generated HTML report includes:
 - A summary of model performances
 - The input data used (system prompts, user prompts, contexts)
 - Detailed results organized by model, with responses for each seed
-- The list of models available in Ollama 
+- The list of models available in Ollama
+
