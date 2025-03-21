@@ -5,6 +5,7 @@ import time
 import os
 import webbrowser
 import logging
+import html as html_module
 from datetime import datetime
 from tqdm import tqdm
 import argparse
@@ -62,6 +63,17 @@ def generate_html_report(results, output_file):
     
     json_filename = get_json_filename(output_file)
     
+    # Vérifier si les résultats contiennent un champ "Resultats"
+    resultats_a_surligner = []
+    for result in results:
+        if "Resultats" in result and isinstance(result["Resultats"], list):
+            resultats_a_surligner.extend(result["Resultats"])
+    
+    # Extraire le commentaire du premier résultat s'il existe
+    commentaire = ""
+    if results and "commentaire" in results[0]:
+        commentaire = results[0]["commentaire"]
+    
     html = """
     <!DOCTYPE html>
     <html lang="fr">
@@ -90,12 +102,27 @@ def generate_html_report(results, output_file):
             .models-list { background-color: white; padding: 15px; border-radius: 5px; margin: 20px 0; 
                           box-shadow: 0 1px 3px rgba(0,0,0,0.12); font-family: monospace; }
             .input-data { background-color: white; padding: 15px; border-radius: 5px; margin: 20px 0;
-                         box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
+                          box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
             .input-content { white-space: pre-wrap; background-color: #f5f5f5; padding: 10px; border-left: 4px solid #3f51b5; margin: 10px 0; }
+            .commentaire { background-color: white; padding: 15px; border-radius: 5px; margin: 20px 0;
+                          box-shadow: 0 1px 3px rgba(0,0,0,0.12); font-style: italic; }
+            .highlighted-response { text-decoration: underline; text-decoration-color: green; text-decoration-thickness: 2px; }
         </style>
     </head>
     <body>
         <h1>Comparaison de Modèles LLM avec Ollama</h1>
+    """
+    
+    # Ajouter le commentaire après le titre s'il existe
+    if commentaire:
+        # Afficher le commentaire tel quel, sans échappement HTML
+        html += f"""
+        <div class="commentaire">
+            {commentaire}
+        </div>
+        """
+    
+    html += """
         <a href=\"""" + json_filename + """\" class="json-link">📊 Voir les données brutes (JSON)</a>
         <div class="metadata">
             <p><strong>Date de génération:</strong> """ + datetime.now().strftime("%Y-%m-%d %H:%M:%S") + """</p>
@@ -113,12 +140,20 @@ def generate_html_report(results, output_file):
 
     # Synthèse des temps de réponse
     model_temp_times = {}
+    # Créer un dictionnaire pour stocker les identifiants des premières occurrences de chaque modèle+temp
+    model_temp_first_ids = {}
+    
     for result in results:
         model = result["model"]
         temp = result["temperature"]
         key = f"{model} (temp={temp})"
         if key not in model_temp_times:
             model_temp_times[key] = []
+            
+            # Créer un identifiant unique pour cette combinaison modèle+température
+            model_id = f"model_{model.replace(':', '_')}_{str(temp).replace('.', '_')}"
+            model_temp_first_ids[key] = model_id
+            
         model_temp_times[key].append(result["response_time"])
     
     # Tableau de synthèse
@@ -143,13 +178,16 @@ def generate_html_report(results, output_file):
         model = model_temp.split(" (temp=")[0]
         temp = model_temp.split("=")[1][:-1]
         
+        # Récupérer l'identifiant pour créer le lien
+        model_id = model_temp_first_ids[model_temp]
+        
         # Calcul approximatif de tokens (pourrait être remplacé par une mesure plus précise)
         avg_tokens = sum(len(r["response"].split()) for r in results 
                          if r["model"] == model and r["temperature"] == float(temp)) / len(times)
         
         html += f"""
         <tr>
-            <td>{model} <span class="temp-badge">temp={temp}</span></td>
+            <td><a href="#{model_id}">{model}</a> <span class="temp-badge">temp={temp}</span></td>
             <td>{avg_time:.2f}</td>
             <td>{min_time:.2f}</td>
             <td>{max_time:.2f}</td>
@@ -178,9 +216,11 @@ def generate_html_report(results, output_file):
     """
     
     for sys_id, content in unique_system_prompts.items():
+        # Échapper le contenu HTML
+        escaped_content = html_module.escape(content)
         html += f"""
         <p><strong>{sys_id}</strong></p>
-        <div class="input-content">{content}</div>
+        <div class="input-content">{escaped_content}</div>
         """
     
     # Extraire les prompts utilisateur uniques
@@ -194,9 +234,11 @@ def generate_html_report(results, output_file):
     """
     
     for prompt_id, content in unique_user_prompts.items():
+        # Échapper le contenu HTML
+        escaped_content = html_module.escape(content)
         html += f"""
         <p><strong>{prompt_id}</strong></p>
-        <div class="input-content">{content}</div>
+        <div class="input-content">{escaped_content}</div>
         """
     
     # Extraire les contextes uniques
@@ -212,9 +254,11 @@ def generate_html_report(results, output_file):
     for ctx_id, content in unique_contexts.items():
         # N'afficher le contexte que s'il n'est pas vide
         if content.strip():
+            # Échapper le contenu HTML
+            escaped_content = html_module.escape(content)
             html += f"""
             <p><strong>{ctx_id}</strong></p>
-            <div class="input-content">{content}</div>
+            <div class="input-content">{escaped_content}</div>
             """
         else:
             html += f"""
@@ -228,49 +272,102 @@ def generate_html_report(results, output_file):
     # Tableaux de comparaison pour chaque combinaison
     html += """
     <h2>Résultats Détaillés</h2>
-    <table>
-        <tr class="model-header">
-            <th>Modèle</th>
-            <th>Système</th>
-            <th>Prompt</th>
-            <th>Contexte</th>
-            <th>Graine</th>
-            <th>Température</th>
-            <th>Temps (s)</th>
-            <th>Réponse</th>
-        </tr>
     """
     
-    # Trier les résultats par modèle, système, prompt, contexte, graine et température
-    sorted_results = sorted(results, key=lambda x: (
-        x["model"], 
-        x["system_prompt_id"], 
-        x["user_prompt_id"], 
-        x["context_id"],
-        x["seed"],
-        x["temperature"]
-    ))
+    # Regrouper les résultats par modèle, système, prompt, contexte et température
+    # mais pas par graine
+    grouped_results = {}
+    seeds = set()
+    for result in results:
+        key = (result["model"], result["system_prompt_id"], result["user_prompt_id"], 
+               result["context_id"], result["temperature"])
+        if key not in grouped_results:
+            grouped_results[key] = {}
+        
+        # Stocker le résultat par graine
+        seed = result["seed"]
+        seeds.add(seed)
+        grouped_results[key][seed] = result
     
-    for result in sorted_results:
-        # Remplacer les sauts de ligne pour un affichage HTML correct
-        response_html = result["response"].replace("\n", "<br>")
+    # Trier les graines pour un affichage cohérent
+    sorted_seeds = sorted(list(seeds))
+    
+    # Pour chaque groupe de résultats (même modèle, système, prompt, contexte, température)
+    for group_key, seed_results in sorted(grouped_results.items()):
+        model, sys_id, prompt_id, ctx_id, temp = group_key
+        
+        # Créer un ID pour cette section
+        section_id = f"model_{model.replace(':', '_')}_{str(temp).replace('.', '_')}"
+        
+        # Vérifier si c'est la première occurrence de ce modèle+temp
+        model_temp_key = f"{model} (temp={temp})"
+        is_first_occurrence = model_temp_first_ids.get(model_temp_key) == section_id
+        
+        # Ajouter l'ID seulement si c'est la première occurrence
+        id_attribute = f' id="{section_id}"' if is_first_occurrence else ''
         
         html += f"""
-        <tr>
-            <td>{result["model"]}</td>
-            <td>{result["system_prompt_id"]}</td>
-            <td>{result["user_prompt_id"]}</td>
-            <td>{result["context_id"]}</td>
-            <td>{result["seed"]}</td>
-            <td>{result["temperature"]}</td>
-            <td>{result["response_time"]:.2f}</td>
-            <td class="response">{response_html}</td>
-        </tr>
+        <h3{id_attribute}>Modèle: {model} | Système: {sys_id} | Prompt: {prompt_id} | Contexte: {ctx_id} | Température: {temp}</h3>
+        <table>
+            <tr class="model-header">
+                <th>Métrique</th>
         """
-    
-    html += """
-    </table>
-    """
+        
+        # Créer les en-têtes de colonnes pour chaque graine
+        for seed in sorted_seeds:
+            html += f"""
+                <th>Réponse graine {seed}</th>
+            """
+        
+        html += """
+            </tr>
+            <tr>
+                <th>Temps (s)</th>
+        """
+        
+        # Ajouter les temps de réponse pour chaque graine
+        for seed in sorted_seeds:
+            if seed in seed_results:
+                html += f"""
+                <td>{seed_results[seed]["response_time"]:.2f}</td>
+                """
+            else:
+                html += """
+                <td>N/A</td>
+                """
+        
+        html += """
+            </tr>
+            <tr>
+                <th>Réponse</th>
+        """
+        
+        # Ajouter les réponses pour chaque graine
+        for seed in sorted_seeds:
+            if seed in seed_results:
+                # Échapper d'abord le contenu HTML puis remplacer les sauts de ligne
+                response_text = seed_results[seed]["response"]
+                escaped_response = html_module.escape(response_text)
+                response_html = escaped_response.replace("\n", "<br>")
+                
+                # Vérifier si cette réponse doit être surlignée
+                css_class = "response"
+                if response_text in resultats_a_surligner:
+                    css_class += " highlighted-response"
+                
+                html += f"""
+                <td class="{css_class}">{response_html}</td>
+                """
+            else:
+                html += """
+                <td class="response">N/A</td>
+                """
+        
+        html += """
+            </tr>
+        </table>
+        <br>
+        """
     
     # Ajouter la liste des modèles à la fin
     html += """
@@ -282,7 +379,7 @@ def generate_html_report(results, output_file):
 
     html += """
         <div class="footer">
-            <p>Généré avec le script de comparaison LLM pour Ollama</p>
+            <p>Généré avec <a href="https://github.com/FrancisMalapris/evallm">evallm.py</a> par Francis Malapris</p>
         </div>
     </body>
     </html>
@@ -339,12 +436,15 @@ def compare_llms(config_file, output_file=None):
             "from_file": "contexts/biology_context.txt"
         },
         "seeds": [42, 123],
-        "temperatures": [0.0, 0.7]
+        "temperatures": [0.0, 0.7],
+        "commentaire": "Commentaire optionnel qui sera affiché en haut du rapport",
+        "Resultats": ["réponse à surligner 1", "réponse à surligner 2"]
     }
     ```
     
     Note: Les valeurs dans system_prompts, user_prompts et contexts peuvent être soit des 
     chaînes directes, soit des chemins vers des fichiers dont le contenu sera lu.
+    Le champ "Resultats" est optionnel et contient une liste de réponses à surligner dans le rapport.
     """
     
     logger.info(f"Chargement de la configuration depuis {config_file}")
@@ -365,6 +465,8 @@ def compare_llms(config_file, output_file=None):
     contexts_config = config.get("contexts", {})
     seeds = config.get("seeds", [42])
     temperatures = config.get("temperatures", [0.7])
+    commentaire = config.get("commentaire", "")
+    resultats_a_surligner = config.get("resultats", [])
     
     # Traiter les fichiers pour les prompts système, utilisateur et contextes
     # NOTE: Les valeurs dans system_prompts, user_prompts et contexts peuvent être:
@@ -462,8 +564,14 @@ def compare_llms(config_file, output_file=None):
                                         "seed": seed,
                                         "temperature": temperature,
                                         "response": response["message"]["content"],
-                                        "response_time": elapsed_time
+                                        "response_time": elapsed_time,
+                                        "commentaire": commentaire
                                     }
+                                    
+                                    # Ajouter le champ Resultats si présent dans la configuration
+                                    if resultats_a_surligner:
+                                        result["Resultats"] = resultats_a_surligner
+                                        
                                 except Exception as e:
                                     logger.error(f"Erreur avec {model} (temp={temperature}): {e}")
                                     result = {
@@ -477,8 +585,12 @@ def compare_llms(config_file, output_file=None):
                                         "seed": seed,
                                         "temperature": temperature,
                                         "response": f"ERREUR: {str(e)}",
-                                        "response_time": time.time() - start_time
+                                        "response_time": time.time() - start_time,
+                                        "commentaire": commentaire
                                     }
+                                    
+                                    if resultats_a_surligner:
+                                        result["Resultats"] = resultats_a_surligner
                                 
                                 results.append(result)
                                 pbar.update(1)
