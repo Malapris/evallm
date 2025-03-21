@@ -3,18 +3,17 @@ Script python pour l'évaluation des llm avec des requêtes précises en mode ba
 
 Ce script (que j'ai fait ce soir en 1H avec Cursor) permet de comparer les résultats de plusieurs LLM :
 - vitesse de réponse avec ollama
+- [V3.0] lecture de fichiers pour les prompts système et utilisateur ainsi que le contexte (voir exemple dans merge-test-01)
 - trop classe : variations sur plusieurs graines, températures, contextes, prompts, et prompts système (avec le nom que vous voulez!)
 - comparaison des réponses visuellement dans la sortie
 - préchauffage pour ne pas tenir compte du temps de chargement
-- sortie en html sympa et en json
+- sortie en html sympa et en json [V3.0] : amélioration de la sortie html
 - fichier de configuration simple en json (ex : 9-9-99 où le llm doit deviner cette date à partir de phrases approximatives)
-- lecture de fichiers pour les prompts système et utilisateur ainsi que le contexte (voir exemple dans merge-test-01)
 
 Librairies nécessaires : 
 ollama>=0.1.6
 json-repair>=0.2.0
 tqdm>=4.65.0
-
 
 Pour le lancer : python evallm.py 9-9-99.json # exemple avec le test de base
 Dans ce Json le LLM doit deviner la date du 9/9/99 (mais elle n'est jamais dite précisément).
