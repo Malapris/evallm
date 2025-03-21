@@ -8,10 +8,15 @@ Ce script (que j'ai fait ce soir en 1H avec Cursor) permet de comparer les résu
 - préchauffage pour ne pas tenir compte du temps de chargement
 - sortie en html sympa et en json
 - fichier de configuration simple en json (ex : 9-9-99 où le llm doit deviner cette date à partir de phrases approximatives)
+- lecture de fichiers pour les prompts système et utilisateur ainsi que le contexte (voir exemple dans merge-test-01)
 
-Pour importer les librairies, il suffit de regarder les imports au début du script.
+Librairies nécessaires : 
+ollama>=0.1.6
+json-repair>=0.2.0
+tqdm>=4.65.0
 
-Pour le lancer : python evallm.py 9-9-99.json
+
+Pour le lancer : python evallm.py 9-9-99.json # exemple avec le test de base
 Dans ce Json le LLM doit deviner la date du 9/9/99 (mais elle n'est jamais dite précisément).
 
 Les meilleurs modèles que j'ai testé pour faire cela, triés par vitesse (temps moyen) et taille : 
