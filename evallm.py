@@ -621,14 +621,27 @@ def compare_llms(config_file, output_file=None):
 def main():
     """Fonction principale pour exécuter le script depuis la ligne de commande."""
     parser = argparse.ArgumentParser(description="Comparer des LLM avec Ollama et générer un rapport HTML")
-    parser.add_argument("config", help="Fichier de configuration JSON")
+    parser.add_argument("config", help="Fichier de configuration JSON", nargs='?')
     parser.add_argument("--output", "-o", help="Fichier de sortie HTML (optionnel)")
     parser.add_argument("--debug", action="store_true", help="Activer le mode debug")
+    parser.add_argument("--list", action="store_true", help="Afficher la liste des modèles disponibles au format JSON")
     args = parser.parse_args()
     
     if args.debug:
         logger.setLevel(logging.DEBUG)
         logger.debug("Mode debug activé")
+    
+    if args.list:
+        try:
+            available_models = extract_model_names(ollama.list())
+            print(json.dumps(available_models, indent=2, ensure_ascii=False))
+            return
+        except Exception as e:
+            logger.error(f"Erreur lors de la récupération des modèles: {e}")
+            return
+    
+    if not args.config:
+        parser.error("Le fichier de configuration est requis sauf si --list est utilisé")
     
     compare_llms(args.config, args.output)
 
