@@ -2,162 +2,300 @@ import ollama
 import json
 import json_repair
 import time
-import os
-import webbrowser
-import logging
-import html as html_module
 from datetime import datetime
-from tqdm import tqdm
-import argparse
+from pathlib import Path
+from typing import List, Dict, Optional, Any
+from dataclasses import dataclass
+from rich.console import Console
+from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TaskProgressColumn, TimeRemainingColumn
+from rich.logging import RichHandler
+from pydantic import BaseModel
+import logging
+import platform
+import psutil
+import GPUtil
+import sys
+import webbrowser
+import shutil
+import requests
+from jinja2 import Environment, FileSystemLoader
 
-# Configuration du logging
+# Constantes
+DEFAULT_OLLAMA_URL = 'http://localhost:11434'
+OLLAMA_API_URL = f"{DEFAULT_OLLAMA_URL}/api/version"
+EVALLM_VERSION = "4.0.0"
+GB_DIVISOR = 1024**3
+
+size = shutil.get_terminal_size()
+
+# Configuration du logging avec rich
+console = Console(
+    width=size.columns,
+    force_terminal=True,
+    force_interactive=True,
+    color_system="auto",
+    legacy_windows=False
+)
+
+# Configuration de l'encodage pour Windows
+if platform.system() == 'Windows':
+    if sys.stdout.encoding != 'utf-8':
+        sys.stdout.reconfigure(encoding='utf-8')
+    if sys.stderr.encoding != 'utf-8':
+        sys.stderr.reconfigure(encoding='utf-8')
+
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    datefmt='%Y-%m-%d %H:%M:%S'
+    format="%(message)s",
+    datefmt="[%X]",
+    handlers=[RichHandler(
+        rich_tracebacks=True,
+        console=console,
+        markup=True,
+        show_time=True,
+        show_path=False
+    )]
 )
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("evallm")
 
-def get_json_filename(html_filename):
-    """Retourne le nom du fichier JSON correspondant au fichier HTML."""
-    return os.path.splitext(os.path.basename(html_filename))[0] + ".json"
+# Configuration de la barre de progression
+progress_columns = [
+    SpinnerColumn(),
+    TextColumn("[progress.description]{task.description}"),
+    BarColumn(bar_width=None),
+    TaskProgressColumn(),
+    TimeRemainingColumn(),
+]
 
-def read_content_from_file_if_exists(content):
-    """
-    Vérifie si la chaîne de caractères est un nom de fichier existant.
-    Si oui, lit et retourne le contenu du fichier.
-    Sinon, retourne la chaîne d'origine.
-    """
-    # Vérifier si la chaîne ressemble à un chemin de fichier
-    if isinstance(content, str) and os.path.exists(content) and os.path.isfile(content):
-        try:
-            logger.info(f"Lecture du contenu depuis le fichier: {content}")
-            with open(content, 'r', encoding='utf-8') as f:
-                return f.read()
-        except Exception as e:
-            logger.error(f"Erreur lors de la lecture du fichier {content}: {e}")
-            # En cas d'erreur, on retourne le contenu original
-            return content
-    return content
+@dataclass
+class SystemInfo:
+    os: str
+    os_version: str
+    python_version: str
+    ollama_version: str
+    evallm_version: str
+    cpu: Dict[str, Any]
+    memory: Dict[str, Any]
+    gpu: Optional[List[Dict[str, Any]]]
+    hostname: str
 
-def extract_model_names(ollama_response):
-    """
-    Extrait les noms des modèles à partir de la réponse d'ollama.list()
-    
-    Args:
-        ollama_response: La réponse d'ollama.list() contenant l'attribut models
+class ModelConfig(BaseModel):
+    models: List[str]
+    system_prompts: Dict[str, str]
+    user_prompts: Dict[str, str]
+    contexts: Dict[str, str]
+    seeds: List[int] = [42]
+    temperatures: List[float] = [0.7]
+    commentaire: str = ""
+    resultats: List[str] = []
+
+class Result(BaseModel):
+    model: str
+    system_prompt: str
+    system_prompt_id: str
+    user_prompt: str
+    user_prompt_id: str
+    context: str
+    context_id: str
+    seed: int
+    temperature: float
+    response: str
+    response_time: float
+    commentaire: str
+    Resultats: Optional[List[str]] = None
+
+# Template HTML intégré
+HTML_TEMPLATE = r"""
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparaison de LLM avec Ollama</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; background-color: #f8f9fa; }
+        h1 { color: #1a237e; text-align: center; margin-bottom: 30px; }
+        h2 { color: #283593; margin-top: 40px; border-bottom: 1px solid #c5cae9; padding-bottom: 10px; }
+        .results-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; background-color: white; box-shadow: 0 1px 3px rgba(0,0,0,0.12); table-layout: fixed; }
+        .results-table th, .results-table td { border: 1px solid #e0e0e0; padding: 12px; text-align: left; vertical-align: top; }
+        .results-table th { background-color: #e8eaf6; font-weight: bold; color: #1a237e; }
+        .results-table tr:nth-child(even) { background-color: #f5f5f5; }
+        .results-table tr:hover { background-color: #e8eaf6; }
+        .model-header { background-color: #3f51b5; color: white; }
+        .response { max-height: 300px; overflow-y: auto; white-space: pre-wrap; font-family: monospace; }
+        .response-content { padding: 10px; background-color: #f8f9fa; border-radius: 4px; cursor: pointer; }
+        .response-content:hover { background-color: #e8eaf6; }
+        .response-pre { 
+            display: none; 
+            position: fixed; 
+            top: 5%; 
+            left: 5%; 
+            width: 90%; 
+            max-height: 90vh;
+            background-color: white; 
+            padding: 20px; 
+            border-radius: 8px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            overflow-y: auto; 
+            z-index: 1000; 
+        }
+        .response-pre pre { 
+            margin: 0; 
+            white-space: pre-wrap; 
+            font-family: monospace;
+            font-size: 14px;
+            line-height: 1.4;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            max-height: none;
+            overflow: visible;
+        }
+        .response-pre .think-section { color: #666; font-style: italic; }
+        .think-tag { color: #5c6bc0; font-weight: bold; }
+        .response-text { white-space: pre-wrap; }
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+                  background-color: rgba(0,0,0,0.5); z-index: 999; }
+        .close-button { position: absolute; top: 10px; right: 10px; cursor: pointer; font-size: 24px; }
+        .metadata { background-color: white; padding: 15px; border-radius: 5px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
+        .summary-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; background-color: white; box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
+        .summary-table th, .summary-table td { border: 1px solid #e0e0e0; padding: 12px; text-align: center; }
+        .summary-table th { background-color: #3f51b5; color: white; font-weight: bold; }
+        .summary-table tr:nth-child(even) { background-color: #f5f5f5; }
+        .summary-table tr:hover { background-color: #e8eaf6; }
+        .footer { text-align: center; margin-top: 50px; font-size: 0.8em; color: #5c6bc0; }
+        .temp-badge { display: inline-block; background-color: #5c6bc0; color: white; padding: 2px 6px; 
+                      border-radius: 3px; font-size: 0.8em; margin-left: 8px; }
+        .json-link { display: block; text-align: right; margin: 10px 0; color: #3f51b5; text-decoration: none; }
+        .json-link:hover { text-decoration: underline; }
+        .models-list { background-color: white; padding: 15px; border-radius: 5px; margin: 20px 0; 
+                      box-shadow: 0 1px 3px rgba(0,0,0,0.12); font-family: monospace; }
+        .input-data { background-color: white; padding: 15px; border-radius: 5px; margin: 20px 0;
+                      box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
+        .input-content { white-space: pre-wrap; background-color: #f5f5f5; padding: 10px; border-left: 4px solid #3f51b5; margin: 10px 0; }
+        .commentaire { background-color: white; padding: 15px; border-radius: 5px; margin: 20px 0;
+                      box-shadow: 0 1px 3px rgba(0,0,0,0.12); font-style: italic; }
+        .highlighted-response { text-decoration: underline; text-decoration-color: green; text-decoration-thickness: 2px; }
+        .system-info { background-color: white; padding: 15px; border-radius: 5px; margin: 20px 0;
+                      box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
+        .system-info h3 { color: #1a237e; margin-top: 0; }
+        .system-info table { margin: 10px 0; width: 100%; }
+        .system-info td:first-child { font-weight: bold; width: 200px; }
+        .identical { color: #666; font-style: italic; }
+        .think-section { color: #666; font-style: italic; }
+        think { display: block; color: #666; font-style: italic; margin: 5px 0; }
+        @media screen and (max-width: 768px) {
+            .results-table { display: block; overflow-x: auto; }
+            .summary-table { display: block; overflow-x: auto; }
+        }
+        .header-info {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #5c6bc0;
+            font-size: 1.2em;
+        }
+    </style>
+    <script>
+        function showResponse(response, event) {
+            event.preventDefault();
+            const pre = document.createElement('pre');
+            // Décodage de l'encodage JSON
+            try {
+                response = JSON.parse('"' + response + '"');
+            } catch (e) {
+                // Si le décodage échoue, on garde la réponse originale
+            }
+            // Échappement des caractères spéciaux et gestion des sauts de ligne
+            const escapedResponse = response
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;')
+                .replace(/\n/g, '<br>')
+                .replace(/\r/g, '');
+            pre.innerHTML = escapedResponse;
+            const div = document.createElement('div');
+            div.className = 'response-pre';
+            div.innerHTML = '<span class="close-button" onclick="closeResponse()">&times;</span>';
+            div.appendChild(pre);
+            document.body.appendChild(div);
+            document.querySelector('.overlay').style.display = 'block';
+            div.style.display = 'block';
+        }
         
-    Returns:
-        list: Liste des noms de modèles
-    """
-    model_names = []
-    if hasattr(ollama_response, 'models'):
-        for model in ollama_response.models:
-            if hasattr(model, 'model'):
-                model_names.append(model.model)
-    logger.debug(f"Modèles extraits : {model_names}")
-    return model_names
+        function closeResponse() {
+            const pre = document.querySelector('.response-pre');
+            if (pre) {
+                pre.remove();
+            }
+            document.querySelector('.overlay').style.display = 'none';
+        }
+        
+        // Fermer avec la touche Escape
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeResponse();
+            }
+        });
+        
+        // Fermer en cliquant sur l'overlay
+        document.querySelector('.overlay').addEventListener('click', closeResponse);
+    </script>
+</head>
+<body>
+    <div class="overlay"></div>
+    <h1>evallm : comparaison de modèles avec ollama</h1>
+    <div class="header-info">
+        <h2>{{ system_info.hostname }} - {{ system_info.os }} {{ system_info.os_version }} - {{ datetime.now().strftime("%d/%m/%Y %H:%M:%S") }}</h2>
+    </div>
 
-def generate_html_report(results, output_file):
-    """Génère un rapport HTML avec des tableaux de comparaison des réponses LLM."""
+    <div class="system-info">
+        <h3>Informations Système</h3>
+        <table>
+            <tr>
+                <td>Nom de la machine</td>
+                <td>{{ system_info.hostname }}</td>
+            </tr>
+            <tr>
+                <td>Système d'exploitation</td>
+                <td>{{ system_info.os }} {{ system_info.os_version }}</td>
+            </tr>
+            <tr>
+                <td>Python</td>
+                <td>{{ system_info.python_version }}</td>
+            </tr>
+            <tr>
+                <td>Ollama</td>
+                <td>{{ system_info.ollama_version }}</td>
+            </tr>
+            <tr>
+                <td>evallm.py</td>
+                <td>{{ system_info.evallm_version }}</td>
+            </tr>
+            <tr>
+                <td>CPU</td>
+                <td>{{ system_info.cpu.model }} ({{ system_info.cpu.cores }} cœurs, {{ system_info.cpu.threads }} threads)</td>
+            </tr>
+            <tr>
+                <td>Mémoire</td>
+                <td>{{ "%.1f"|format(system_info.memory.total_gb) }} GB total, {{ "%.1f"|format(system_info.memory.available_gb) }} GB disponible</td>
+            </tr>
+            {% if system_info.gpu %}
+            <tr>
+                <td>GPU</td>
+                <td>
+                    {% for gpu in system_info.gpu %}
+                    {{ gpu.name }} ({{ "%.1f"|format(gpu.memory_total/1024) }} GB VRAM)<br>
+                    {% endfor %}
+                </td>
+            </tr>
+            {% endif %}
+        </table>
+    </div>
     
-    json_filename = get_json_filename(output_file)
-    
-    # Vérifier si les résultats contiennent un champ "Resultats"
-    resultats_a_surligner = []
-    for result in results:
-        if "Resultats" in result and isinstance(result["Resultats"], list):
-            resultats_a_surligner.extend(result["Resultats"])
-    
-    # Extraire le commentaire du premier résultat s'il existe
-    commentaire = ""
-    if results and "commentaire" in results[0]:
-        commentaire = results[0]["commentaire"]
-    
-    html = """
-    <!DOCTYPE html>
-    <html lang="fr">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Comparaison de LLM avec Ollama</title>
-        <style>
-            body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; background-color: #f8f9fa; }
-            h1 { color: #1a237e; text-align: center; margin-bottom: 30px; }
-            h2 { color: #283593; margin-top: 40px; border-bottom: 1px solid #c5cae9; padding-bottom: 10px; }
-            table { border-collapse: collapse; width: 100%; margin-bottom: 30px; background-color: white; box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
-            th, td { border: 1px solid #e0e0e0; padding: 12px; text-align: left; vertical-align: top; }
-            th { background-color: #e8eaf6; font-weight: bold; color: #1a237e; }
-            tr:nth-child(even) { background-color: #f5f5f5; }
-            tr:hover { background-color: #e8eaf6; }
-            .model-header { background-color: #3f51b5; color: white; }
-            .response { max-height: 300px; overflow-y: auto; white-space: pre-wrap; }
-            .metadata { background-color: white; padding: 15px; border-radius: 5px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
-            .summary-table th { text-align: center; }
-            .footer { text-align: center; margin-top: 50px; font-size: 0.8em; color: #5c6bc0; }
-            .temp-badge { display: inline-block; background-color: #5c6bc0; color: white; padding: 2px 6px; 
-                          border-radius: 3px; font-size: 0.8em; margin-left: 8px; }
-            .json-link { display: block; text-align: right; margin: 10px 0; color: #3f51b5; text-decoration: none; }
-            .json-link:hover { text-decoration: underline; }
-            .models-list { background-color: white; padding: 15px; border-radius: 5px; margin: 20px 0; 
-                          box-shadow: 0 1px 3px rgba(0,0,0,0.12); font-family: monospace; }
-            .input-data { background-color: white; padding: 15px; border-radius: 5px; margin: 20px 0;
-                          box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
-            .input-content { white-space: pre-wrap; background-color: #f5f5f5; padding: 10px; border-left: 4px solid #3f51b5; margin: 10px 0; }
-            .commentaire { background-color: white; padding: 15px; border-radius: 5px; margin: 20px 0;
-                          box-shadow: 0 1px 3px rgba(0,0,0,0.12); font-style: italic; }
-            .highlighted-response { text-decoration: underline; text-decoration-color: green; text-decoration-thickness: 2px; }
-        </style>
-    </head>
-    <body>
-        <h1>Comparaison de Modèles LLM avec Ollama</h1>
-    """
-    
-    # Ajouter le commentaire après le titre s'il existe
-    if commentaire:
-        # Afficher le commentaire tel quel, sans échappement HTML
-        html += f"""
-        <div class="commentaire">
-            {commentaire}
-        </div>
-        """
-    
-    html += """
-        <a href=\"""" + json_filename + """\" class="json-link">📊 Voir les données brutes (JSON)</a>
-        <div class="metadata">
-            <p><strong>Date de génération:</strong> """ + datetime.now().strftime("%Y-%m-%d %H:%M:%S") + """</p>
-        </div>
-    """
+    <a href="{{ output_file|replace('.html', '.json') }}" class="json-link">📊 Voir les données au format JSON</a>
 
-    # Regrouper les résultats par combinaison
-    combinations = {}
-    for result in results:
-        key = (result["system_prompt_id"], result["user_prompt_id"], result["context_id"], 
-               result["seed"], result["temperature"])
-        if key not in combinations:
-            combinations[key] = []
-        combinations[key].append(result)
-
-    # Synthèse des temps de réponse
-    model_temp_times = {}
-    # Créer un dictionnaire pour stocker les identifiants des premières occurrences de chaque modèle+temp
-    model_temp_first_ids = {}
-    
-    for result in results:
-        model = result["model"]
-        temp = result["temperature"]
-        key = f"{model} (temp={temp})"
-        if key not in model_temp_times:
-            model_temp_times[key] = []
-            
-            # Créer un identifiant unique pour cette combinaison modèle+température
-            model_id = f"model_{model.replace(':', '_')}_{str(temp).replace('.', '_')}"
-            model_temp_first_ids[key] = model_id
-            
-        model_temp_times[key].append(result["response_time"])
-    
-    # Tableau de synthèse
-    html += """
     <h2>Synthèse des Performances</h2>
     <table class="summary-table">
         <tr class="model-header">
@@ -167,227 +305,159 @@ def generate_html_report(results, output_file):
             <th>Temps maximum (s)</th>
             <th>Nombre de tokens moyen</th>
         </tr>
-    """
-    
-    for model_temp, times in sorted(model_temp_times.items()):
-        avg_time = sum(times) / len(times)
-        min_time = min(times)
-        max_time = max(times)
-        
-        # Extraire modèle et température
-        model = model_temp.split(" (temp=")[0]
-        temp = model_temp.split("=")[1][:-1]
-        
-        # Récupérer l'identifiant pour créer le lien
-        model_id = model_temp_first_ids[model_temp]
-        
-        # Calcul approximatif de tokens (pourrait être remplacé par une mesure plus précise)
-        avg_tokens = sum(len(r["response"].split()) for r in results 
-                         if r["model"] == model and r["temperature"] == float(temp)) / len(times)
-        
-        html += f"""
+        {% for model_temp, times in model_temp_times.items() %}
         <tr>
-            <td><a href="#{model_id}">{model}</a> <span class="temp-badge">temp={temp}</span></td>
-            <td>{avg_time:.2f}</td>
-            <td>{min_time:.2f}</td>
-            <td>{max_time:.2f}</td>
-            <td>{avg_tokens:.0f}</td>
+            <td><a href="#model_{{ model_temp_first_ids[model_temp] }}">{{ model_temp.split(' (')[0] }}</a> <span class="temp-badge">temp={{ model_temp.split('=')[1].split(')')[0] }}</span></td>
+            <td>{{ "%.2f"|format(sum(times)/len(times)) }}</td>
+            <td>{{ "%.2f"|format(min(times)) }}</td>
+            <td>{{ "%.2f"|format(max(times)) }}</td>
+            <td>{{ avg_tokens[model_temp] }}</td>
         </tr>
-        """
-    
-    html += """
+        {% endfor %}
     </table>
-    """
     
-    # Afficher les données d'entrée (prompts et contextes)
-    html += """
     <h2>Données d'Entrée</h2>
     <div class="input-data">
-    """
-    
-    # Extraire les prompts système uniques
-    unique_system_prompts = {}
-    for result in results:
-        if result["system_prompt_id"] not in unique_system_prompts:
-            unique_system_prompts[result["system_prompt_id"]] = result["system_prompt"]
-    
-    html += """
         <h3>Prompts Système</h3>
-    """
-    
-    for sys_id, content in unique_system_prompts.items():
-        # Échapper le contenu HTML
-        escaped_content = html_module.escape(content)
-        html += f"""
-        <p><strong>{sys_id}</strong></p>
-        <div class="input-content">{escaped_content}</div>
-        """
-    
-    # Extraire les prompts utilisateur uniques
-    unique_user_prompts = {}
-    for result in results:
-        if result["user_prompt_id"] not in unique_user_prompts:
-            unique_user_prompts[result["user_prompt_id"]] = result["user_prompt"]
-    
-    html += """
+        {% for id, prompt in unique_system_prompts.items() %}
+        <p><strong>{{ id }}</strong></p>
+        <div class="input-content">{{ prompt }}</div>
+        {% endfor %}
+        
         <h3>Prompts Utilisateur</h3>
-    """
-    
-    for prompt_id, content in unique_user_prompts.items():
-        # Échapper le contenu HTML
-        escaped_content = html_module.escape(content)
-        html += f"""
-        <p><strong>{prompt_id}</strong></p>
-        <div class="input-content">{escaped_content}</div>
-        """
-    
-    # Extraire les contextes uniques
-    unique_contexts = {}
-    for result in results:
-        if result["context_id"] not in unique_contexts:
-            unique_contexts[result["context_id"]] = result["context"]
-    
-    html += """
+        {% for id, prompt in unique_user_prompts.items() %}
+        <p><strong>{{ id }}</strong></p>
+        <div class="input-content">{{ prompt }}</div>
+        {% endfor %}
+        
         <h3>Contextes</h3>
-    """
-    
-    for ctx_id, content in unique_contexts.items():
-        # N'afficher le contexte que s'il n'est pas vide
-        if content.strip():
-            # Échapper le contenu HTML
-            escaped_content = html_module.escape(content)
-            html += f"""
-            <p><strong>{ctx_id}</strong></p>
-            <div class="input-content">{escaped_content}</div>
-            """
-        else:
-            html += f"""
-            <p><strong>{ctx_id}</strong>: <em>Aucun contexte</em></p>
-            """
-    
-    html += """
+        {% for id, context in unique_contexts.items() %}
+        <p><strong>{{ id }}</strong></p>
+        <div class="input-content">{{ context }}</div>
+        {% endfor %}
     </div>
-    """
-
-    # Tableaux de comparaison pour chaque combinaison
-    html += """
+    
     <h2>Résultats Détaillés</h2>
-    """
+    {% for (model, sys_id, prompt_id, ctx_id, temp), seeds in grouped_results.items() %}
+    {% set model_temp_key = model ~ " (temp=" ~ temp ~ ")" %}
+    <h3 id="model_{{ model_temp_first_ids[model_temp_key] }}">Modèle: {{ model }} | Système: {{ sys_id }} | Prompt: {{ prompt_id }} | Contexte: {{ ctx_id }} | Température: {{ temp }}</h3>
+    <table class="results-table">
+        <tr class="model-header">
+            <th>Métrique</th>
+            {% for seed in sorted_seeds %}
+            <th>Réponse graine {{ seed }}</th>
+            {% endfor %}
+        </tr>
+        <tr>
+            <th>Temps (s)</th>
+            {% for seed in sorted_seeds %}
+            <td>{{ "%.2f"|format(seeds[seed].response_time) }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <th>Réponse</th>
+            {% for seed in sorted_seeds %}
+            <td class="response">
+                {% if seeds[seed].response in previous_responses %}
+                <div class="response-content identical">(identique)</div>
+                {% else %}
+                <div class="response-content response-text" onclick="showResponse({{ seeds[seed].response|tojson|replace('"', '&quot;')|replace('\n', '\\n')|replace('\r', '')|replace('\\', '\\\\')|safe }}, event)">
+                    {{ seeds[seed].response|replace('<think>', '<span class="think-tag">&lt;think&gt;</span>')|replace('</think>', '<span class="think-tag">&lt;/think&gt;</span>')|safe }}
+                </div>
+                {% set _ = previous_responses.append(seeds[seed].response) %}
+                {% endif %}
+            </td>
+            {% endfor %}
+        </tr>
+    </table>
+    <br>
+    {% endfor %}
     
-    # Regrouper les résultats par modèle, système, prompt, contexte et température
-    # mais pas par graine
-    grouped_results = {}
-    seeds = set()
-    for result in results:
-        key = (result["model"], result["system_prompt_id"], result["user_prompt_id"], 
-               result["context_id"], result["temperature"])
-        if key not in grouped_results:
-            grouped_results[key] = {}
-        
-        # Stocker le résultat par graine
-        seed = result["seed"]
-        seeds.add(seed)
-        grouped_results[key][seed] = result
-    
-    # Trier les graines pour un affichage cohérent
-    sorted_seeds = sorted(list(seeds))
-    
-    # Pour chaque groupe de résultats (même modèle, système, prompt, contexte, température)
-    for group_key, seed_results in sorted(grouped_results.items()):
-        model, sys_id, prompt_id, ctx_id, temp = group_key
-        
-        # Créer un ID pour cette section
-        section_id = f"model_{model.replace(':', '_')}_{str(temp).replace('.', '_')}"
-        
-        # Vérifier si c'est la première occurrence de ce modèle+temp
-        model_temp_key = f"{model} (temp={temp})"
-        is_first_occurrence = model_temp_first_ids.get(model_temp_key) == section_id
-        
-        # Ajouter l'ID seulement si c'est la première occurrence
-        id_attribute = f' id="{section_id}"' if is_first_occurrence else ''
-        
-        html += f"""
-        <h3{id_attribute}>Modèle: {model} | Système: {sys_id} | Prompt: {prompt_id} | Contexte: {ctx_id} | Température: {temp}</h3>
-        <table>
-            <tr class="model-header">
-                <th>Métrique</th>
-        """
-        
-        # Créer les en-têtes de colonnes pour chaque graine
-        for seed in sorted_seeds:
-            html += f"""
-                <th>Réponse graine {seed}</th>
-            """
-        
-        html += """
-            </tr>
-            <tr>
-                <th>Temps (s)</th>
-        """
-        
-        # Ajouter les temps de réponse pour chaque graine
-        for seed in sorted_seeds:
-            if seed in seed_results:
-                html += f"""
-                <td>{seed_results[seed]["response_time"]:.2f}</td>
-                """
-            else:
-                html += """
-                <td>N/A</td>
-                """
-        
-        html += """
-            </tr>
-            <tr>
-                <th>Réponse</th>
-        """
-        
-        # Ajouter les réponses pour chaque graine
-        for seed in sorted_seeds:
-            if seed in seed_results:
-                # Échapper d'abord le contenu HTML puis remplacer les sauts de ligne
-                response_text = seed_results[seed]["response"]
-                escaped_response = html_module.escape(response_text)
-                response_html = escaped_response.replace("\n", "<br>")
-                
-                # Vérifier si cette réponse doit être surlignée
-                css_class = "response"
-                if response_text in resultats_a_surligner:
-                    css_class += " highlighted-response"
-                
-                html += f"""
-                <td class="{css_class}">{response_html}</td>
-                """
-            else:
-                html += """
-                <td class="response">N/A</td>
-                """
-        
-        html += """
-            </tr>
-        </table>
-        <br>
-        """
-    
-    # Ajouter la liste des modèles à la fin
-    html += """
     <h2>Modèles Disponibles</h2>
     <div class="models-list">
-        """ + json.dumps(extract_model_names(ollama.list())) + """
+        {{ available_models|tojson }}
     </div>
-    """
-
-    html += """
-        <div class="footer">
-            <p>Généré avec <a href="https://github.com/FrancisMalapris/evallm">evallm.py</a> par Francis Malapris</p>
-        </div>
-    </body>
-    </html>
-    """
     
-    return html
+    <div class="footer">
+        <p>Généré avec <a href="https://github.com/Malapris/evallm">evallm.py</a> par Francis Malapris</p>
+    </div>
+</body>
+</html>
+"""
 
-def warmup_model(model, system_prompt, user_prompt, context=""):
+def get_system_info(ollama_url: str = DEFAULT_OLLAMA_URL) -> SystemInfo:
+    """Récupère les informations système détaillées."""
+    try:
+        # Récupération des informations CPU
+        cpu_freq = psutil.cpu_freq()
+        cpu_info = {
+            "model": platform.processor(),
+            "cores": psutil.cpu_count(),
+            "threads": psutil.cpu_count(logical=True),
+            "freq": cpu_freq._asdict() if cpu_freq else None
+        }
+        
+        # Récupération des informations mémoire
+        memory = psutil.virtual_memory()
+        memory_info = {
+            "total_gb": memory.total / GB_DIVISOR,
+            "available_gb": memory.available / GB_DIVISOR,
+            "used_gb": memory.used / GB_DIVISOR,
+            "percent": memory.percent
+        }
+        
+        # Récupération des informations GPU
+        gpu_info = []
+        try:
+            gpus = GPUtil.getGPUs()
+            gpu_info = [{
+                "name": gpu.name,
+                "memory_total": gpu.memoryTotal,
+                "memory_used": gpu.memoryUsed,
+                "memory_free": gpu.memoryFree,
+                "gpu_load": gpu.load * 100
+            } for gpu in gpus]
+        except (ImportError, RuntimeError) as e:
+            logger.warning(f"Impossible de récupérer les informations GPU: {e}")
+        
+        # Récupération de la version d'Ollama
+        try:
+            api_url = f"{ollama_url}/api/version"
+            response = requests.get(api_url, timeout=5)
+            ollama_version = response.json().get('version', 'Non disponible') if response.status_code == 200 else "Non disponible"
+            if response.status_code != 200:
+                logger.warning(f"Erreur lors de la récupération de la version d'Ollama: {response.status_code}")
+        except Exception as e:
+            logger.warning(f"Impossible de récupérer la version d'Ollama: {e}")
+            ollama_version = "Non disponible"
+        
+        return SystemInfo(
+            os=platform.system(),
+            os_version=platform.version(),
+            python_version=sys.version,
+            ollama_version=ollama_version,
+            evallm_version=EVALLM_VERSION,
+            cpu=cpu_info,
+            memory=memory_info,
+            gpu=gpu_info,
+            hostname=platform.node()
+        )
+    except Exception as e:
+        logger.error(f"Erreur lors de la récupération des informations système: {e}")
+        return None
+
+def read_content_from_file_if_exists(content: str) -> str:
+    """Lit le contenu d'un fichier s'il existe, sinon retourne la chaîne d'origine."""
+    if isinstance(content, str) and Path(content).exists() and Path(content).is_file():
+        try:
+            logger.info(f"Lecture du contenu depuis le fichier: {content}")
+            return Path(content).read_text(encoding='utf-8')
+        except Exception as e:
+            logger.error(f"Erreur lors de la lecture du fichier {content}: {e}")
+            return content
+    return content
+
+def warmup_model(model: str, system_prompt: str, user_prompt: str, context: str = "") -> None:
     """Préchauffage du modèle avec une graine 0."""
     logger.info(f"Préchauffage du modèle {model}...")
     full_prompt = f"{context}\n\n{user_prompt}" if context else user_prompt
@@ -396,235 +466,266 @@ def warmup_model(model, system_prompt, user_prompt, context=""):
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": full_prompt}
         ]
-        ollama.chat(
-            model=model,
-            messages=messages,
-            options={
-                "seed": 0,
-                "temperature": 0.7
-            }
-        )
+        for _ in range(1):
+            ollama.chat(
+                model=model,
+                messages=messages,
+                options={"seed": 0, "temperature": 0.0}
+            )
+            time.sleep(0.5)
         logger.info(f"Préchauffage réussi pour {model}")
     except Exception as e:
         logger.warning(f"Avertissement lors du préchauffage de {model}: {e}")
 
-def compare_llms(config_file, output_file=None):
-    """Compare différents LLM en utilisant Ollama selon la configuration spécifiée.
-    
-    Args:
-        config_file (str): Chemin vers le fichier de configuration JSON
-        output_file (str, optional): Chemin pour le fichier de sortie HTML.
-            Si non spécifié, un nom sera généré automatiquement.
-    
-    Returns:
-        list: Liste des résultats de chaque combinaison de test
-        
-    Exemple de configuration JSON:
-    ```json
-    {
-        "models": ["llama3", "mistral"],
-        "system_prompts": {
-            "standard": "Tu es un assistant IA utile et précis.",
-            "from_file": "prompts/system_expert.txt"
-        },
-        "user_prompts": {
-            "question1": "Explique-moi la photosynthèse",
-            "from_file": "prompts/question_complex.txt"
-        },
-        "contexts": {
-            "none": "",
-            "from_file": "contexts/biology_context.txt"
-        },
-        "seeds": [42, 123],
-        "temperatures": [0.0, 0.7],
-        "commentaire": "Commentaire optionnel qui sera affiché en haut du rapport",
-        "Resultats": ["réponse à surligner 1", "réponse à surligner 2"]
-    }
-    ```
-    
-    Note: Les valeurs dans system_prompts, user_prompts et contexts peuvent être soit des 
-    chaînes directes, soit des chemins vers des fichiers dont le contenu sera lu.
-    Le champ "Resultats" est optionnel et contient une liste de réponses à surligner dans le rapport.
-    """
-    
+def compare_llms(config_file: str, output_file: Optional[str] = None, ollama_url: str = DEFAULT_OLLAMA_URL) -> List[Result]:
+    """Compare différents LLM en utilisant Ollama selon la configuration spécifiée."""
     logger.info(f"Chargement de la configuration depuis {config_file}")
-    # Charger la configuration depuis le fichier JSON
-    with open(config_file, 'r', encoding='utf-8') as f:
-        config = json_repair.load(f)
+    logger.info(f"Utilisation du serveur Ollama: {ollama_url}")
     
-    # Déterminer le nom du fichier de sortie basé sur le fichier d'entrée
-    if output_file is None:
-        base_name = os.path.splitext(os.path.basename(config_file))[0]
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        output_file = f"{base_name}_{timestamp}.html"
-        logger.info(f"Fichier de sortie automatiquement défini : {output_file}")
+    # Vérification du fichier de configuration
+    config_path = Path(config_file)
+    if not config_path.exists():
+        logger.error(f"Le fichier de configuration {config_file} n'existe pas")
+        return []
     
-    models = config.get("models", [])
-    system_prompts_config = config.get("system_prompts", {})
-    user_prompts_config = config.get("user_prompts", {})
-    contexts_config = config.get("contexts", {})
-    seeds = config.get("seeds", [42])
-    temperatures = config.get("temperatures", [0.7])
-    commentaire = config.get("commentaire", "")
-    resultats_a_surligner = config.get("resultats", [])
+    try:
+        # Chargement de la configuration
+        with open(config_file, 'r', encoding='utf-8') as f:
+            config_data = json_repair.load(f)
+        config = ModelConfig(**config_data)
+    except Exception as e:
+        logger.error(f"Erreur lors du chargement de la configuration: {e}")
+        return []
     
-    # Traiter les fichiers pour les prompts système, utilisateur et contextes
-    # NOTE: Les valeurs dans system_prompts, user_prompts et contexts peuvent être:
-    # 1. Des chaînes de caractères directes à utiliser comme prompts/contextes
-    # 2. Des chemins vers des fichiers dont le contenu sera lu et utilisé
-    system_prompts = {}
-    for sys_id, content in system_prompts_config.items():
-        system_prompts[sys_id] = read_content_from_file_if_exists(content)
+    # Validation de la configuration
+    if not all([config.models, config.system_prompts, config.user_prompts]):
+        logger.error("Configuration invalide: modèles, prompts système ou prompts utilisateur manquants")
+        return []
     
-    user_prompts = {}
-    for prompt_id, content in user_prompts_config.items():
-        user_prompts[prompt_id] = read_content_from_file_if_exists(content)
+    # Détermination du nom du fichier de sortie
+    base_name = config_path.stem
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    output_file = f"{base_name}_{timestamp}.html"
+    logger.info(f"Fichier de sortie : {output_file}")
     
-    contexts = {}
-    for ctx_id, content in contexts_config.items():
-        contexts[ctx_id] = read_content_from_file_if_exists(content)
-
-    logger.info(f"Configuration chargée : {len(models)} modèles, {len(system_prompts)} prompts système, "
+    # Récupération des informations système
+    system_info = get_system_info(ollama_url)
+    
+    # Initialisation du fichier JSON
+    json_output = Path(output_file).with_suffix('.json')
+    json_output.write_text(json.dumps({
+        "system_info": system_info.__dict__,
+        "config": config.model_dump(),
+        "results": []
+    }, indent=2, ensure_ascii=False), encoding='utf-8')
+    
+    # Traitement des fichiers pour les prompts
+    system_prompts = {k: read_content_from_file_if_exists(v) for k, v in config.system_prompts.items()}
+    user_prompts = {k: read_content_from_file_if_exists(v) for k, v in config.user_prompts.items()}
+    contexts = {k: read_content_from_file_if_exists(v) for k, v in config.contexts.items()}
+    
+    logger.info(f"Configuration chargée : {len(config.models)} modèles, {len(system_prompts)} prompts système, "
                 f"{len(user_prompts)} prompts utilisateur, {len(contexts)} contextes")
     
-    # Vérifier que les modèles sont disponibles dans Ollama
+    # Vérification des modèles disponibles
     try:
-        logger.info("Vérification des modèles disponibles...")
-        available_models_response = ollama.list()
-        available_models = extract_model_names(available_models_response)
-        
-        for model in models:
+        # Configuration de l'URL d'Ollama
+        ollama.base_url = ollama_url
+        available_models = [model.model for model in ollama.list().models]
+        for model in config.models:
             if model not in available_models:
                 logger.warning(f"Le modèle '{model}' n'est pas disponible. Utilisez 'ollama pull {model}' pour le télécharger.")
-                
     except Exception as e:
         logger.error(f"Erreur lors de la vérification des modèles: {e}")
         logger.error("Assurez-vous qu'Ollama est installé et en cours d'exécution.")
         return []
     
-    # Calculer le nombre total d'itérations
-    total_iterations = len(models) * len(system_prompts) * len(user_prompts) * len(contexts) * len(seeds) * len(temperatures)
+    # Calcul du nombre total d'itérations
+    total_iterations = len(config.models) * len(system_prompts) * len(user_prompts) * len(contexts) * len(config.seeds) * len(config.temperatures)
     logger.info(f"Nombre total d'itérations à effectuer : {total_iterations}")
-    results = []
     
-    # Générer les réponses pour chaque combinaison
-    with tqdm(total=total_iterations, desc="Génération des réponses") as pbar:
-        current_model = None
-        for model in models:
-            # Préchauffer le modèle si on change de modèle
+    results = []
+    current_model = None
+    
+    with Progress(*progress_columns, console=console) as progress:
+        task = progress.add_task("Génération des réponses...", total=total_iterations)
+        
+        for model in config.models:
             if current_model != model:
                 logger.info(f"Changement de modèle : passage à {model}")
-                # Utiliser le premier prompt système et utilisateur disponible pour le préchauffage
                 first_sys_prompt = next(iter(system_prompts.values()))
                 first_user_prompt = next(iter(user_prompts.values()))
                 first_context = next(iter(contexts.values()))
                 warmup_model(model, first_sys_prompt, first_user_prompt, first_context)
                 current_model = model
-
+            
             for sys_id, system_prompt in system_prompts.items():
                 for prompt_id, user_prompt in user_prompts.items():
                     for ctx_id, context in contexts.items():
-                        for seed in seeds:
-                            for temperature in temperatures:
+                        for seed in config.seeds:
+                            for temperature in config.temperatures:
                                 logger.debug(f"Génération pour {model} (seed={seed}, temp={temperature})")
-                                # Construire le prompt complet avec contexte si nécessaire
-                                full_prompt = user_prompt
-                                if context:
-                                    full_prompt = f"{user_prompt}\n\n{context}"
                                 
-                                # Générer la réponse avec Ollama
+                                full_prompt = f"{user_prompt}\n\n{context}" if context else user_prompt
                                 start_time = time.time()
+                                
                                 try:
-                                    messages = [
-                                        {"role": "system", "content": system_prompt},
-                                        {"role": "user", "content": full_prompt}
-                                    ]
-                                    
                                     response = ollama.chat(
                                         model=model,
-                                        messages=messages,
+                                        messages=[
+                                            {"role": "system", "content": system_prompt},
+                                            {"role": "user", "content": full_prompt}
+                                        ],
                                         options={
                                             "seed": seed if seed is not None else None,
                                             "temperature": temperature
                                         }
                                     )
                                     
-                                    elapsed_time = time.time() - start_time
-                                    logger.debug(f"Réponse générée en {elapsed_time:.2f}s")
+                                    result = Result(
+                                        model=model,
+                                        system_prompt=system_prompt,
+                                        system_prompt_id=sys_id,
+                                        user_prompt=user_prompt,
+                                        user_prompt_id=prompt_id,
+                                        context=context,
+                                        context_id=ctx_id,
+                                        seed=seed,
+                                        temperature=temperature,
+                                        response=response["message"]["content"],
+                                        response_time=time.time() - start_time,
+                                        commentaire=config.commentaire,
+                                        Resultats=config.resultats if config.resultats else None
+                                    )
                                     
-                                    # Enregistrer les détails de la réponse
-                                    result = {
-                                        "model": model,
-                                        "system_prompt": system_prompt,
-                                        "system_prompt_id": sys_id,
-                                        "user_prompt": user_prompt,
-                                        "user_prompt_id": prompt_id,
-                                        "context": context,
-                                        "context_id": ctx_id,
-                                        "seed": seed,
-                                        "temperature": temperature,
-                                        "response": response["message"]["content"],
-                                        "response_time": elapsed_time,
-                                        "commentaire": commentaire
-                                    }
-                                    
-                                    # Ajouter le champ Resultats si présent dans la configuration
-                                    if resultats_a_surligner:
-                                        result["Resultats"] = resultats_a_surligner
-                                        
                                 except Exception as e:
                                     logger.error(f"Erreur avec {model} (temp={temperature}): {e}")
-                                    result = {
-                                        "model": model,
-                                        "system_prompt": system_prompt,
-                                        "system_prompt_id": sys_id,
-                                        "user_prompt": user_prompt,
-                                        "user_prompt_id": prompt_id,
-                                        "context": context,
-                                        "context_id": ctx_id,
-                                        "seed": seed,
-                                        "temperature": temperature,
-                                        "response": f"ERREUR: {str(e)}",
-                                        "response_time": time.time() - start_time,
-                                        "commentaire": commentaire
-                                    }
-                                    
-                                    if resultats_a_surligner:
-                                        result["Resultats"] = resultats_a_surligner
+                                    result = Result(
+                                        model=model,
+                                        system_prompt=system_prompt,
+                                        system_prompt_id=sys_id,
+                                        user_prompt=user_prompt,
+                                        user_prompt_id=prompt_id,
+                                        context=context,
+                                        context_id=ctx_id,
+                                        seed=seed,
+                                        temperature=temperature,
+                                        response=f"ERREUR: {str(e)}",
+                                        response_time=time.time() - start_time,
+                                        commentaire=config.commentaire,
+                                        Resultats=config.resultats if config.resultats else None
+                                    )
                                 
                                 results.append(result)
-                                pbar.update(1)
+                                
+                                # Mise à jour du fichier JSON
+                                try:
+                                    json_data = json.loads(json_output.read_text(encoding='utf-8'))
+                                    json_data["results"].append(result.model_dump())
+                                    json_output.write_text(json.dumps(json_data, indent=2, ensure_ascii=False), encoding='utf-8')
+                                except Exception as e:
+                                    logger.error(f"Erreur lors de l'écriture du résultat dans le fichier JSON: {e}")
+                                
+                                progress.update(task, advance=1)
     
     logger.info("Génération des réponses terminée")
     
-    # Générer et sauvegarder le rapport HTML
-    logger.info("Génération du rapport HTML...")
-    html_content = generate_html_report(results, output_file)
-    with open(output_file, 'w', encoding='utf-8') as f:
-        f.write(html_content)
+    # Génération du rapport HTML avec Jinja2
+    script_dir = Path(__file__).parent
+    env = Environment(loader=FileSystemLoader(str(script_dir)))
+    env.globals.update({
+        'sum': sum,
+        'len': len,
+        'min': min,
+        'max': max,
+        'str': str,
+        'float': float,
+        'int': int,
+        'round': round,
+        'datetime': datetime
+    })
+    template = env.from_string(HTML_TEMPLATE)
     
+    # Préparation des données pour le template
+    model_temp_times = {}
+    model_temp_first_ids = {}
+    avg_tokens = {}
+    unique_system_prompts = {}
+    unique_user_prompts = {}
+    unique_contexts = {}
+    grouped_results = {}
+    sorted_seeds = sorted(config.seeds)
+    previous_responses = []
+    
+    # Organisation des résultats
+    for result in results:
+        model_temp_key = f"{result.model} (temp={result.temperature})"
+        if model_temp_key not in model_temp_times:
+            model_temp_times[model_temp_key] = []
+            model_temp_first_ids[model_temp_key] = f"model_{result.model.replace(':', '_')}_{str(result.temperature).replace('.', '_')}"
+            avg_tokens[model_temp_key] = 0
+        
+        model_temp_times[model_temp_key].append(result.response_time)
+        
+        # Collecte des prompts uniques
+        unique_system_prompts[result.system_prompt_id] = result.system_prompt
+        unique_user_prompts[result.user_prompt_id] = result.user_prompt
+        unique_contexts[result.context_id] = result.context
+        
+        # Groupement des résultats
+        group_key = (result.model, result.system_prompt_id, result.user_prompt_id, result.context_id, result.temperature)
+        if group_key not in grouped_results:
+            grouped_results[group_key] = {}
+        grouped_results[group_key][result.seed] = result
+    
+    html_content = template.render(
+        results=results,
+        system_info=system_info,
+        datetime=datetime,
+        config=config,
+        model_temp_times=model_temp_times,
+        model_temp_first_ids=model_temp_first_ids,
+        avg_tokens=avg_tokens,
+        unique_system_prompts=unique_system_prompts,
+        unique_user_prompts=unique_user_prompts,
+        unique_contexts=unique_contexts,
+        grouped_results=grouped_results,
+        sorted_seeds=sorted_seeds,
+        previous_responses=previous_responses,
+        output_file=output_file,
+        available_models=available_models
+    )
+    
+    # Sauvegarde du rapport HTML
+    Path(output_file).write_text(html_content, encoding='utf-8')
     logger.info(f"Rapport HTML sauvegardé dans {output_file}")
     
-    # Sauvegarder les données brutes en JSON pour d'éventuelles analyses ultérieures
-    json_output = get_json_filename(output_file)
-    with open(json_output, 'w', encoding='utf-8') as f:
-        json.dump(results, f, indent=2, ensure_ascii=False)
-    
-    logger.info(f"Données brutes sauvegardées dans {json_output}")
-    
-    # Ouvrir le fichier HTML dans le navigateur par défaut
-    webbrowser.open('file://' + os.path.abspath(output_file))
+    # Ouverture du rapport dans le navigateur
+    webbrowser.open('file://' + str(Path(output_file).absolute()))
     logger.info("Rapport ouvert dans le navigateur")
+    
+    # Sauvegarde des résultats dans un fichier JSON
+    json_output = Path(output_file).with_suffix('.json')
+    json_output.write_text(json.dumps({
+        "system_info": system_info.__dict__,
+        "config": config.model_dump(),
+        "results": [result.model_dump() for result in results]
+    }, indent=2, ensure_ascii=False), encoding='utf-8')
+    
+    logger.info(f"Résultats sauvegardés dans {json_output}")
     
     return results
 
 def main():
     """Fonction principale pour exécuter le script depuis la ligne de commande."""
+    import argparse
+    
     parser = argparse.ArgumentParser(description="Comparer des LLM avec Ollama et générer un rapport HTML")
     parser.add_argument("config", help="Fichier de configuration JSON", nargs='?')
     parser.add_argument("--output", "-o", help="Fichier de sortie HTML (optionnel)")
     parser.add_argument("--debug", action="store_true", help="Activer le mode debug")
     parser.add_argument("--list", action="store_true", help="Afficher la liste des modèles disponibles au format JSON")
+    parser.add_argument("--ollama-url", help=f"URL du serveur Ollama (défaut: {DEFAULT_OLLAMA_URL})", default=DEFAULT_OLLAMA_URL)
     args = parser.parse_args()
     
     if args.debug:
@@ -633,8 +734,10 @@ def main():
     
     if args.list:
         try:
-            available_models = extract_model_names(ollama.list())
-            print(json.dumps(available_models, indent=2, ensure_ascii=False))
+            # Configuration de l'URL d'Ollama
+            ollama.base_url = args.ollama_url
+            available_models = [model.model for model in ollama.list().models]
+            console.print_json(data=available_models)
             return
         except Exception as e:
             logger.error(f"Erreur lors de la récupération des modèles: {e}")
@@ -643,7 +746,7 @@ def main():
     if not args.config:
         parser.error("Le fichier de configuration est requis sauf si --list est utilisé")
     
-    compare_llms(args.config, args.output)
+    compare_llms(args.config, args.output, args.ollama_url)
 
 if __name__ == "__main__":
     main()
